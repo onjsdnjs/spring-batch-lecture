@@ -21,12 +21,7 @@ public class JobConfiguration {
 
     @Bean
     public Job helloJob() {
-<<<<<<< HEAD:src/main/java/io/springbatch/springbatchlecture/JobConfiguration.java
         return this.jobBuilderFactory.get("job")
-                .incrementer(new RunIdIncrementer())
-=======
-        return this.jobBuilderFactory.get("Job")
->>>>>>> 2fde6824e3383da7413e48a4e727430be9d52f9c:src/main/java/io/springbatch/springbatchlecture/HelloJobConfiguration.java
                 .start(step1())
                 .next(step2())
                 .next(step3())
