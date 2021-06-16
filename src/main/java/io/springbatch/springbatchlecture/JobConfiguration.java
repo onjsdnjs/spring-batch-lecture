@@ -15,17 +15,17 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class HelloJobConfiguration {
+public class JobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
     public Job helloJob() {
-        return this.jobBuilderFactory.get("helloJob")
-                .incrementer(new RunIdIncrementer())
+        return this.jobBuilderFactory.get("Job")
                 .start(step1())
                 .next(step2())
+                .next(step3())
                 .build();
     }
 
@@ -46,6 +46,15 @@ public class HelloJobConfiguration {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("step2 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println("step3 has executed");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
