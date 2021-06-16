@@ -1,6 +1,7 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
@@ -33,7 +34,10 @@ public class StepExecutionConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("step1 has executed");
+                        System.out.println("contribution.getExitStatus(): " + contribution.getExitStatus());
+                        System.out.println("contribution.getStepExecution().getStepName(): " + contribution.getStepExecution().getStepName());
+                        System.out.println("contribution.getStepExecution().getJobExecution().getJobInstance().getJobName(): " + contribution.getStepExecution().getJobExecution().getJobInstance().getJobName());
+                        contribution.setExitStatus(ExitStatus.STOPPED);
                         return RepeatStatus.FINISHED;
                     }
                 })
