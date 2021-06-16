@@ -15,14 +15,14 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class HelloJobConfiguration {
+public class JobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
     public Job helloJob() {
-        return this.jobBuilderFactory.get("helloJob")
+        return this.jobBuilderFactory.get("job")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
