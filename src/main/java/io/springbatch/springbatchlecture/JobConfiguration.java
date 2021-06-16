@@ -6,7 +6,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -22,10 +21,15 @@ public class JobConfiguration {
 
     @Bean
     public Job helloJob() {
+<<<<<<< HEAD:src/main/java/io/springbatch/springbatchlecture/JobConfiguration.java
         return this.jobBuilderFactory.get("job")
                 .incrementer(new RunIdIncrementer())
+=======
+        return this.jobBuilderFactory.get("Job")
+>>>>>>> 2fde6824e3383da7413e48a4e727430be9d52f9c:src/main/java/io/springbatch/springbatchlecture/HelloJobConfiguration.java
                 .start(step1())
                 .next(step2())
+                .next(step3())
                 .build();
     }
 
@@ -46,6 +50,15 @@ public class JobConfiguration {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("step2 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println("step3 has executed");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
