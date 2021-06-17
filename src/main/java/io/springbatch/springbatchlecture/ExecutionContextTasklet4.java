@@ -11,15 +11,6 @@ public class ExecutionContextTasklet4 implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-
-        Object name = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext().get("name");
-
-        if(name == null){
-            chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext().put("name", "user1");
-        }
-
-        throw new RuntimeException("step has failed");
-
-//        return RepeatStatus.FINISHED;
+        return RepeatStatus.FINISHED;
     }
 }

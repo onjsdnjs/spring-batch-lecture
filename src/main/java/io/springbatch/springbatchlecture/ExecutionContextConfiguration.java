@@ -5,7 +5,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,17 +19,14 @@ public class ExecutionContextConfiguration {
     private final ExecutionContextTasklet2 executionContextTasklet2;
     private final ExecutionContextTasklet3 executionContextTasklet3;
     private final ExecutionContextTasklet4 executionContextTasklet4;
-    private final ExecutionContextTasklet5 executionContextTasklet5;
 
     @Bean
     public Job BatchJob() {
         return this.jobBuilderFactory.get("Job")
-                .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
                 .next(step3())
                 .next(step4())
-                .next(step5())
                 .build();
     }
 
@@ -58,11 +54,4 @@ public class ExecutionContextConfiguration {
                 .tasklet(executionContextTasklet4)
                 .build();
     }
-    @Bean
-    public Step step5() {
-        return stepBuilderFactory.get("step4")
-                .tasklet(executionContextTasklet4)
-                .build();
-    }
-
 }
