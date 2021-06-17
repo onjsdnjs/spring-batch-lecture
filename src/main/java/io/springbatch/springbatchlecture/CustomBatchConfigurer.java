@@ -26,7 +26,7 @@ public class CustomBatchConfigurer extends BasicBatchConfigurer {
         factory.setDataSource(dataSource);
         factory.setTransactionManager(getTransactionManager());
         factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE"); // isolation 수준, 기본값은 “ISOLATION_SERIALIZABLE”
-        factory.setTablePrefix("SYSTEM_");  // 테이블 Prefix, 기본값은 “BATCH_”,
+        factory.setTablePrefix("BATCH_");  // 테이블 Prefix, 기본값은 “BATCH_”,
                                             // BATCH_JOB_EXECUTION 가 SYSTEM_JOB_EXECUTION 으로 변경됨
                                             // 실제 테이블명이 변경되는 것은 아니다
         factory.setMaxVarCharLength(1000); // varchar 최대 길이(기본값 2500)
