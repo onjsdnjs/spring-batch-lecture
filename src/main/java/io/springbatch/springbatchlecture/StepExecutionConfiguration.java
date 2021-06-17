@@ -43,10 +43,28 @@ public class StepExecutionConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
-//                    throw new RuntimeException("step has failed");
                     System.out.println("step2 has executed");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
     }
+
+   /* @Bean
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
+                .tasklet(executionContextTasklet1)
+                .build();
+    }
+    @Bean
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
+                .tasklet(executionContextTasklet2)
+                .build();
+    }
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet(executionContextTasklet3)
+                .build();
+    }*/
 }
