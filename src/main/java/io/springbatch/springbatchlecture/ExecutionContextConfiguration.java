@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class StepContributionConfiguration {
+public class ExecutionContextConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+
+    private final ExecutionContextTasklet executionContextTasklet;
 
     @Bean
     public Job BatchJob() {
@@ -31,26 +33,13 @@ public class StepContributionConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .tasklet(new Tasklet() {
-                    @Override
-                    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("contribution.getExitStatus(): " + contribution.getExitStatus());
-                        System.out.println("contribution.getStepExecution().getStepName(): " + contribution.getStepExecution().getStepName());
-                        System.out.println("contribution.getStepExecution().getJobExecution().getJobInstance().getJobName(): " + contribution.getStepExecution().getJobExecution().getJobInstance().getJobName());
-                        contribution.setExitStatus(ExitStatus.STOPPED);
-                        return RepeatStatus.FINISHED;
-                    }
-                })
+                .tasklet(executionContextTasklet)
                 .build();
     }
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
-                .tasklet((contribution, chunkContext) -> {
-//                    throw new RuntimeException("step has failed");
-                    System.out.println("step2 has executed");
-                    return RepeatStatus.FINISHED;
-                })
+                .tasklet(executionContextTasklet)
                 .build();
     }
 }
