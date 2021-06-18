@@ -6,6 +6,8 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -14,18 +16,9 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobConfiguration2 {
+public class FlowConfiguration {
 
-    private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    @Bean
-    public Job batchJob2() {
-        return this.jobBuilderFactory.get("batchJob2")
-                .start(step3())
-                .next(step4())
-                .build();
-    }
 
     @Bean
     public Step step3() {
@@ -47,5 +40,14 @@ public class JobConfiguration2 {
                     return RepeatStatus.FINISHED;
                 })
                 .build();
+    }
+
+    @Bean
+    public Flow flow() {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
+        flowBuilder.start(step3())
+                .next(step4())
+                .end();
+        return flowBuilder.build();
     }
 }
