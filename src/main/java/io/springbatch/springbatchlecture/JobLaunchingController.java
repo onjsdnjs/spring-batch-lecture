@@ -54,8 +54,6 @@ public class JobLaunchingController {
 		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 		jobLauncher.run(job, jobParameters);
 
-
-
 		System.out.println("Job is completed");
 	}
 }
