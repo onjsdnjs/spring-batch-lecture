@@ -21,12 +21,13 @@ public class JobRepositoryListener implements JobExecutionListener {
 
         String jobName = jobExecution.getJobInstance().getJobName();
         JobParameters jobParameters = new JobParametersBuilder().addString("requestDate", "20210102").toJobParameters();
-
-        JobInstance jobInstance = jobRepository.createJobInstance(jobName,jobParameters);
-        System.out.println("jobInstance = " + jobInstance);
-
-        JobExecution lastJobExecution = jobRepository.getLastJobExecution(jobName, jobParameters);
-        System.out.println("lastJobExecution = " + lastJobExecution);
-
+        JobExecution lastExecution = jobRepository.getLastJobExecution(jobName, jobParameters);
+        if(lastExecution != null) {
+            for (StepExecution execution : lastExecution.getStepExecutions()) {
+                BatchStatus status = execution.getStatus();
+                System.out.println("BatchStatus = " + status.isRunning());
+                System.out.println("BatchStatus = " + status.name());
+            }
+        }
     }
 }

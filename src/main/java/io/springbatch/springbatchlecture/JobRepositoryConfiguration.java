@@ -24,7 +24,6 @@ public class JobRepositoryConfiguration {
     @Bean
     public Job BatchJob() {
         return this.jobBuilderFactory.get("Job")
-                .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
                 .listener(jobRepositoryListener)
