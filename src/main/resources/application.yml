@@ -4,6 +4,7 @@ spring:
   batch:
     job:
       enabled: false
+      names: ${job.name:NONE}
 
 ---
 spring:
