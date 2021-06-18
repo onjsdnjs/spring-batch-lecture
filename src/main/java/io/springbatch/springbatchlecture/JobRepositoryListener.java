@@ -18,6 +18,7 @@ public class JobRepositoryListener implements JobExecutionListener {
 
     @Override
     public void afterJob(JobExecution jobExecution) {
+
         String jobName = jobExecution.getJobInstance().getJobName();
         JobParameters jobParameters = new JobParametersBuilder().addString("requestDate", "20210102").toJobParameters();
 
