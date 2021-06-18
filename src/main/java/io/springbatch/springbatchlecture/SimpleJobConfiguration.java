@@ -1,6 +1,8 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -24,6 +26,7 @@ public class SimpleJobConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
+                .next(step3())
                 .build();
     }
 
@@ -41,6 +44,18 @@ public class SimpleJobConfiguration {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("step2 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet((contribution, chunkContext) -> {
+//                    throw new RuntimeException("failed");
+                    chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
+                    contribution.setExitStatus(ExitStatus.STOPPED);
+                    System.out.println("step3 has executed");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
