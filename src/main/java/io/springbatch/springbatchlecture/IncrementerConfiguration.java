@@ -12,15 +12,17 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class StartNextConfiguration {
+public class IncrementerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final CustomJobParametersIncrementer customJobParametersIncrementer;
 
     @Bean
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
-                .incrementer(new RunIdIncrementer())
+//                .incrementer(new RunIdIncrementer())
+                .incrementer(customJobParametersIncrementer)
                 .start(step1())
                 .next(step2())
                 .next(step3())
