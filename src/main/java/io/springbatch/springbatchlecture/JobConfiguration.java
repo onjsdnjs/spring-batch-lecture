@@ -20,7 +20,7 @@ public class JobConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job batchJob() {
+    public Job batchJob1() {
         return this.jobBuilderFactory.get("batchJob1")
                 .start(step1())
                 .next(step2())

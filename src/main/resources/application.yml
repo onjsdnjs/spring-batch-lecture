@@ -3,7 +3,7 @@ spring:
     active: local
   batch:
     job:
-      enabled: false
+#      enabled: false
       names: ${job.name:NONE}
 
 ---
