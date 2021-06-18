@@ -19,11 +19,15 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 public class JobLaunchingController {
@@ -32,15 +36,18 @@ public class JobLaunchingController {
 	private Job job;
 
 	@Autowired
-	private JobLauncher jobLauncher;
+	private BasicBatchConfigurer basicBatchConfigurer;
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public void launch(@RequestParam("name") String name) throws Exception {
+	@PostMapping(value = "/batch")
+	public void launch(@RequestBody Member member) throws Exception {
 
 		JobParameters jobParameters = new JobParametersBuilder()
-						.addString("name", name)
+						.addString("id", member.getId())
+						.addDate("date", new Date())
 						.toJobParameters();
 
+		SimpleJobLauncher jobLauncher = (SimpleJobLauncher)basicBatchConfigurer.getJobLauncher();
+		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 		jobLauncher.run(job, jobParameters);
 
 		System.out.println("Job is completed");
