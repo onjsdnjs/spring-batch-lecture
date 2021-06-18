@@ -36,6 +36,9 @@ public class JobLaunchingController {
 	private Job job;
 
 	@Autowired
+	private JobLauncher simpleLauncher;
+
+	@Autowired
 	private BasicBatchConfigurer basicBatchConfigurer;
 
 	@PostMapping(value = "/batch")
@@ -46,9 +49,12 @@ public class JobLaunchingController {
 						.addDate("date", new Date())
 						.toJobParameters();
 
+		//SimpleJobLauncher jobLauncher = (SimpleJobLauncher)simpleLauncher;
 		SimpleJobLauncher jobLauncher = (SimpleJobLauncher)basicBatchConfigurer.getJobLauncher();
 		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 		jobLauncher.run(job, jobParameters);
+
+
 
 		System.out.println("Job is completed");
 	}
