@@ -23,7 +23,7 @@ public class PreventRestartConfiguration {
                 .start(step1())
                 .next(step2())
                 .next(step3())
-//                .preventRestart()
+                .preventRestart()
                 .build();
     }
 
