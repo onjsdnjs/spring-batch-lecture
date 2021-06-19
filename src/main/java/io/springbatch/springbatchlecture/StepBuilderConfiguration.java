@@ -69,7 +69,6 @@ public class StepBuilderConfiguration {
                 .flow(flow())
                 .build();
     }
-
     @Bean
     public Job job() {
         return this.jobBuilderFactory.get("job")
