@@ -77,7 +77,6 @@ public class StepBuilderConfiguration {
                 .next(step3())
                 .build();
     }
-
     @Bean
     public Flow flow() {
         FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
