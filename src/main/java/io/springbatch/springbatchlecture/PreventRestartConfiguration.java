@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class ValidatorConfiguration {
+public class PreventRestartConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -20,11 +20,10 @@ public class ValidatorConfiguration {
     @Bean
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
-//                .validator(new CustomJobParametersValidator())
-                .validator(new DefaultJobParametersValidator(new String[]{"name"},new String[]{"year"}))
                 .start(step1())
                 .next(step2())
                 .next(step3())
+//                .preventRestart()
                 .build();
     }
 
@@ -51,7 +50,8 @@ public class ValidatorConfiguration {
         return stepBuilderFactory.get("step3")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("step3 has executed");
-                    return RepeatStatus.FINISHED;
+                    throw new RuntimeException("step has failed");
+//                    return RepeatStatus.FINISHED;
                 })
                 .build();
     }
