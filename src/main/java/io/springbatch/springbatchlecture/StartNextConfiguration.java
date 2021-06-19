@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Configuration
-public class FlowJobConfiguration {
+public class StartNextConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -34,11 +34,20 @@ public class FlowJobConfiguration {
     @Bean
     public Job batchJob() {
         return jobBuilderFactory.get("batchJob")
-                .start(step1())
-                .on("COMPLETED").to(step2())
+                .start(flow())
                 .next(step3())
                 .end()
                 .build();
+    }
+
+    @Bean
+    public Flow flow() {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
+        flowBuilder.start(step1())
+                .next(step2())
+                .end();
+
+        return flowBuilder.build();
     }
 
     @Bean
@@ -73,6 +82,5 @@ public class FlowJobConfiguration {
                     }
                 }).build();
     }
-
 
 }
