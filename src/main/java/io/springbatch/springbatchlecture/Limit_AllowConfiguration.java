@@ -24,11 +24,10 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Configuration
-public class TaskletConfiguration {
+public class Limit_AllowConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final CustomTasklet customTasklet;
 
     @Bean
     public Job batchJob() {
@@ -48,12 +47,20 @@ public class TaskletConfiguration {
                         return RepeatStatus.FINISHED;
                     }
                 })
+                .startLimit(3)
                 .build();
     }
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
-                .tasklet(customTasklet)
+                .tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                        System.out.println("stepContribution = " + stepContribution + ", chunkContext = " + chunkContext);
+                        return RepeatStatus.FINISHED;
+                    }
+                })
+                .allowStartIfComplete(true)
                 .build();
     }
 }
