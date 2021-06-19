@@ -5,24 +5,23 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class IncrementerConfiguration {
+public class ValidatorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final CustomJobParametersIncrementer customJobParametersIncrementer;
 
     @Bean
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
-//                .incrementer(new RunIdIncrementer())
-                .incrementer(customJobParametersIncrementer)
+//                .validator(new CustomJobParametersValidator())
+                .validator(new DefaultJobParametersValidator(new String[]{"name"},new String[]{"year"}))
                 .start(step1())
                 .next(step2())
                 .next(step3())
