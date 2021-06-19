@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class StartNextConfiguration {
+public class PreventRestartConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -23,6 +23,7 @@ public class StartNextConfiguration {
                 .start(step1())
                 .next(step2())
                 .next(step3())
+                .preventRestart()
                 .build();
     }
 
@@ -48,8 +49,8 @@ public class StartNextConfiguration {
     public Step step3() {
         return stepBuilderFactory.get("step3")
                 .tasklet((contribution, chunkContext) -> {
-                    System.out.println("step3 has executed");
-                    return RepeatStatus.FINISHED;
+                    throw new RuntimeException("step3 has failed");
+//                    return RepeatStatus.FINISHED;
                 })
                 .build();
     }
