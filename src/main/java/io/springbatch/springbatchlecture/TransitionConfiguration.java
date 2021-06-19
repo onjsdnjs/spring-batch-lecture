@@ -42,8 +42,10 @@ public class TransitionConfiguration {
                 .from(step1()).on("*")
                 .to(step5())
                 .next(step6())
-                .on("COMPLETED")
+                .on("DO PASS")
                 .end()
+                .from(step6()).on("*")
+                .to(step7())
                 .end()
                 .build();
     }
@@ -111,6 +113,30 @@ public class TransitionConfiguration {
                     System.out.println(">> step6 has executed");
                     return RepeatStatus.FINISHED;
                 })
+                .listener(new PassCheckingListener())
                 .build();
+    }
+
+    @Bean
+    public Step step7() {
+        return stepBuilderFactory.get("step7")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println(">> step7 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    static class PassCheckingListener extends StepExecutionListenerSupport {
+
+        public ExitStatus afterStep(StepExecution stepExecution) {
+
+            String exitCode = stepExecution.getExitStatus().getExitCode();
+            if (!exitCode.equals(ExitStatus.FAILED.getExitCode())) {
+                return new ExitStatus("DO PASS ");
+            } else {
+                return null;
+            }
+        }
     }
 }
