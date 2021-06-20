@@ -40,7 +40,6 @@ public class ItemReader_ItemProcessor_ItemWriter_Configuration {
     }
 
     @Bean
-    @JobScope
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
