@@ -12,14 +12,19 @@ import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Configuration
-public class JobScope_StepScope_Configuration {
+public class ChunkConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -27,18 +32,23 @@ public class JobScope_StepScope_Configuration {
     @Bean
     public Job job() {
         return jobBuilderFactory.get("batchJob")
-                .start(step1(null))
+                .start(step1())
                 .next(step2())
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step step1(@Value("#{jobParameters['message']}") String message) {
-
-        System.out.println("jobParameters['message'] : " + message);
+    public Step step1() {
         return stepBuilderFactory.get("step1")
-                .tasklet(tasklet1())
+                .<String, String>chunk(3)
+                .reader(new ListItemReader<>(Arrays.asList("item1", "item2", "item3")))
+                .writer(new ItemWriter<String>() {
+                    @Override
+                    public void write(List<? extends String> items) throws Exception {
+                        items.forEach(item -> System.out.println(item));
+                    }
+                })
                 .build();
     }
 
@@ -50,14 +60,5 @@ public class JobScope_StepScope_Configuration {
                     return RepeatStatus.FINISHED;
                 })
                 .build();
-    }
-
-    @Bean
-    @StepScope
-    public Tasklet tasklet1() {
-        return (stepContribution, chunkContext) -> {
-            System.out.println("tasklet1 has executed");
-            return RepeatStatus.FINISHED;
-        };
     }
 }
