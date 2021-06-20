@@ -33,7 +33,6 @@ public class ItemStreamConfiguration {
     }
 
     @Bean
-    @JobScope
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
@@ -44,7 +43,6 @@ public class ItemStreamConfiguration {
     }
 
     @Bean
-    @StepScope
     public CustomItemStreamReader itemReader() {
         List<String> items = new ArrayList<>(100);
 
