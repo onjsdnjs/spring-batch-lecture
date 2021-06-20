@@ -114,5 +114,4 @@ public class SimpleFlowConfiguration {
                     return RepeatStatus.FINISHED;
                 }).build();
     }
-
 }
