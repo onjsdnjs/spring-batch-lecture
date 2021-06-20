@@ -9,25 +9,25 @@ import java.util.List;
 public class CustomItemStreamReader implements ItemStreamReader<String> {
 
     private final List<String> items;
-    private int curIndex = -1;
+    private int index = -1;
     private boolean restart = false;
 
     public CustomItemStreamReader(List<String> items) {
         this.items = items;
-        this.curIndex = 0;
+        this.index = 0;
     }
 
     @Override
     public String read() throws Exception {
         String item = null;
 
-        if(this.curIndex < this.items.size()) {
-            item = this.items.get(this.curIndex);
-            this.curIndex++;
+        if(this.index < this.items.size()) {
+            item = this.items.get(index);
+            index++;
         }
 
-        if(this.curIndex == 42 && !restart) {
-            throw new RuntimeException("The Answer to the Ultimate Question of Life, the Universe, and Everything");
+        if(this.index == 42 && !restart) {
+            throw new RuntimeException("Restart is required.");
         }
 
         return item;
@@ -35,19 +35,19 @@ public class CustomItemStreamReader implements ItemStreamReader<String> {
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        if(executionContext.containsKey("curIndex")) {
-            this.curIndex = executionContext.getInt("curIndex");
+        if(executionContext.containsKey("index")) {
+            index = executionContext.getInt("index");
             this.restart = true;
         }
         else {
-            this.curIndex = 0;
-            executionContext.put("curIndex", this.curIndex);
+            index = 0;
+            executionContext.put("index", index);
         }
     }
 
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
-        executionContext.put("curIndex", this.curIndex);
+        executionContext.put("index", index);
     }
 
     @Override
