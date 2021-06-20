@@ -42,7 +42,7 @@ public class ChunkConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
-                .reader(new ListItemReader<>(Arrays.asList("item1", "item2", "item3")))
+                .reader(new ListItemReader<>(Arrays.asList("item1", "item2", "item3","item4", "item5", "item6")))
                 .writer(new ItemWriter<String>() {
                     @Override
                     public void write(List<? extends String> items) throws Exception {
