@@ -39,7 +39,7 @@ public class ItemStreamConfiguration {
                 .<String, String>chunk(3)
                 .reader(itemReader())
                 .writer(itemWriter())
-                .stream(itemReader())
+//                .stream(itemReader())
                 .build();
     }
 
