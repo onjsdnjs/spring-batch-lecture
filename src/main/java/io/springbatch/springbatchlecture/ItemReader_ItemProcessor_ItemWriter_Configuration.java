@@ -13,6 +13,7 @@ import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -43,20 +44,25 @@ public class ItemReader_ItemProcessor_ItemWriter_Configuration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
-                .reader(new ListItemReader<>(Arrays.asList("item1", "item2", "item3","item4", "item5", "item6")))
-                .processor(new ItemProcessor<String, String>() {
-                    @Override
-                    public String process(String item) throws Exception {
-                        return "my_" + item;
-                    }
-                })
-                .writer(new ItemWriter<String>() {
-                    @Override
-                    public void write(List<? extends String> items) throws Exception {
-                        items.forEach(item -> System.out.println(item));
-                    }
-                })
+                .reader(itemReader())
+                .processor(itemProcessor())
+                .writer(itemWriter())
                 .build();
+    }
+
+    @Bean
+    public ItemReader itemReader() {
+        return new CustomItemReader(Arrays.asList(new Customer("user1"), new Customer("user2"), new Customer("user3")));
+    }
+
+    @Bean
+    public ItemProcessor itemProcessor() {
+        return new CustomItemProcessor();
+    }
+
+    @Bean
+    public ItemWriter itemWriter() {
+        return new CustomItemWriter();
     }
 
     @Bean
