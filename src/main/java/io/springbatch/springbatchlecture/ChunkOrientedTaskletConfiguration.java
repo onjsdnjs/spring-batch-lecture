@@ -25,7 +25,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class ChunkConfiguration {
+public class ChunkOrientedTaskletConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
