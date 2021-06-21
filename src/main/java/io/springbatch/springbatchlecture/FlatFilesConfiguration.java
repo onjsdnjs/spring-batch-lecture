@@ -15,11 +15,13 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,24 +46,13 @@ public class FlatFilesConfiguration {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
                 .reader(itemReader())
-                .processor(itemProcessor())
-                .writer(itemWriter())
+                .writer(new ItemWriter() {
+                    @Override
+                    public void write(List items) throws Exception {
+                        System.out.println("items = " + items);
+                    }
+                })
                 .build();
-    }
-
-    @Bean
-    public ItemReader itemReader() {
-        return new CustomItemReader(Arrays.asList(new Customer("user1"), new Customer("user2"), new Customer("user3")));
-    }
-
-    @Bean
-    public ItemProcessor itemProcessor() {
-        return new CustomItemProcessor();
-    }
-
-    @Bean
-    public ItemWriter itemWriter() {
-        return new CustomItemWriter();
     }
 
     @Bean
@@ -72,5 +63,11 @@ public class FlatFilesConfiguration {
                     return RepeatStatus.FINISHED;
                 })
                 .build();
+    }
+
+    @Bean
+    public ItemReader itemReader(){
+        FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
+        return itemReader;
     }
 }
