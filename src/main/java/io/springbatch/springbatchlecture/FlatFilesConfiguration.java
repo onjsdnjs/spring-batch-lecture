@@ -26,7 +26,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class ChunkArchitectureConfiguration {
+public class FlatFilesConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
