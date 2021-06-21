@@ -50,21 +50,6 @@ public class FlatFilesConfiguration {
     }
 
     @Bean
-    public ItemReader itemReader() {
-        return new CustomItemReader(Arrays.asList(new Customer("user1"), new Customer("user2"), new Customer("user3")));
-    }
-
-    @Bean
-    public ItemProcessor itemProcessor() {
-        return new CustomItemProcessor();
-    }
-
-    @Bean
-    public ItemWriter itemWriter() {
-        return new CustomItemWriter();
-    }
-
-    @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
