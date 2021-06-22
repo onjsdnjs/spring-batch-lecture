@@ -61,12 +61,11 @@ public class FlatFilesDelimitedConfiguration {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("flatFile")
                 .resource(new ClassPathResource("customer.csv"))
-                .lineMapper(new DefaultLineMapper<>())
                 .fieldSetMapper(new CustomerFieldSetMapper())
-                .lineTokenizer(new DelimitedLineTokenizer())
+//                .lineTokenizer(new DelimitedLineTokenizer())
                 .targetType(Customer.class)
                 .linesToSkip(1)
-                .delimited().delimiter("|")
+                .delimited().delimiter(",")
                 .names("name","year","age")
                 .build();
     }
