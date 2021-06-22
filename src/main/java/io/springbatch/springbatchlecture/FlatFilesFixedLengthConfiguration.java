@@ -31,7 +31,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class FlatFilesDelimitedConfiguration {
+public class FlatFilesFixedLengthConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
