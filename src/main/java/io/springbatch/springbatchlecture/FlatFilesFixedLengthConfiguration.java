@@ -3,30 +3,17 @@ package io.springbatch.springbatchlecture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.job.builder.FlowBuilder;
-import org.springframework.batch.core.job.flow.Flow;
-import org.springframework.batch.core.job.flow.FlowExecutionStatus;
-import org.springframework.batch.core.job.flow.JobExecutionDecider;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.item.file.transform.Range;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -61,15 +48,17 @@ public class FlatFilesFixedLengthConfiguration {
     public FlatFileItemReader itemReader() {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("flatFile")
-                .resource(new ClassPathResource("customer.csv"))
+                .resource(new ClassPathResource("customer.txt"))
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
                 .targetType(Customer.class)
                 .linesToSkip(1)
-                .delimited().delimiter(",")
+                .fixedLength()
+                .addColumns(new Range(1,5))
+                .addColumns(new Range(6,9))
+                .addColumns(new Range(10,11))
                 .names("name","year","age")
                 .build();
     }
-
 
     @Bean
     public Step step2() {
