@@ -60,6 +60,7 @@ public class FlatFilesFixedLengthConfiguration {
                 .addColumns(new Range(6))
                 .addColumns(new Range(10))*/
                 .names("name","year","age")
+                .strict(false)
                 .build();
     }
 
