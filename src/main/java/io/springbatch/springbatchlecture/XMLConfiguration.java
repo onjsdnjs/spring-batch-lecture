@@ -48,7 +48,7 @@ public class XMLConfiguration {
     public FlatFileItemReader itemReader() {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("flatFile")
-                .resource(new ClassPathResource("customer.txt"))
+                .resource(new ClassPathResource("customer.xml"))
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
                 .targetType(Customer.class)
                 .linesToSkip(1)
