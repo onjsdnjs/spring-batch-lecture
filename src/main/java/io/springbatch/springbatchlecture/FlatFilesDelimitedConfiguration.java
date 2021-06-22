@@ -17,6 +17,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -61,7 +62,8 @@ public class FlatFilesDelimitedConfiguration {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("flatFile")
                 .resource(new ClassPathResource("customer.csv"))
-                .fieldSetMapper(new CustomerFieldSetMapper())
+                .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
+//                .fieldSetMapper(new CustomerFieldSetMapper())
 //                .lineTokenizer(new DelimitedLineTokenizer())
                 .targetType(Customer.class)
                 .linesToSkip(1)
