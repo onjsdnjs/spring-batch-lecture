@@ -18,7 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class FlatFilesFixedLengthConfiguration {
+public class ExceptionHandlingConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -56,9 +56,6 @@ public class FlatFilesFixedLengthConfiguration {
                 .addColumns(new Range(1,5))
                 .addColumns(new Range(6,9))
                 .addColumns(new Range(10,11))
-                /*.addColumns(new Range(1))
-                .addColumns(new Range(6))
-                .addColumns(new Range(10))*/
                 .names("name","year","age")
                 .strict(false)
                 .build();
