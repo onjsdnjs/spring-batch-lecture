@@ -29,9 +29,7 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
@@ -58,17 +56,14 @@ public class FlatFilesConfiguration {
     }
 
     @Bean
-    public ItemReaderAdapter customItemReader() {
+    public CustomItemReader customItemReader() {
 
-        ItemReaderAdapter reader = new ItemReaderAdapter();
-        reader.setTargetObject(customService());
-        reader.setTargetMethod("joinCustomer");
+        List<Customer> customers = Arrays.asList(new Customer(1, "hong gil dong1", 41),
+                new Customer(2, "hong gil dong2", 42),
+                new Customer(3, "hong gil dong3", 43));
 
+        CustomItemReader<Customer> reader = new CustomItemReader(customers);
         return reader;
-    }
-
-    private CustomService customService() {
-        return new CustomService();
     }
 
     @Bean
