@@ -7,7 +7,9 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
@@ -19,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Date;
@@ -31,7 +34,7 @@ public class JpaCursorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource dataSource;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job job() {
@@ -51,17 +54,18 @@ public class JpaCursorConfiguration {
     }
 
     @Bean
-    public JdbcCursorItemReader<Customer> customItemReader() {
-        return new JdbcCursorItemReaderBuilder()
-                .name("jdbcCursorItemReader")
-                .fetchSize(10)
-                .sql("select id, firstName, lastName, birthdate from customer where firstName like ? order by lastName, firstName")
-                .beanRowMapper(Customer.class)
-                .queryArguments(new String[]{"A%"}, new int[]{Types.VARCHAR})
-//                .maxItemCount(20)
-//                .currentItemCount(5)
-//                .maxRows(100)
-                .dataSource(dataSource)
+    public JpaCursorItemReader<Customer> customItemReader() {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("firstname", "A%");
+
+        return new JpaCursorItemReaderBuilder()
+                .name("jpaCursorItemReader")
+                .queryString("select c from Customer c where firstname like :firstname")
+                .entityManagerFactory(entityManagerFactory)
+                .parameterValues(parameters)
+//                .maxItemCount(10)
+//                .currentItemCount(2)
                 .build();
     }
 
