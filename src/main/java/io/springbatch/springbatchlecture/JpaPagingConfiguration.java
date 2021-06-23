@@ -59,11 +59,16 @@ public class JpaPagingConfiguration {
 
     @Bean
     public JpaPagingItemReader<Customer> customItemReader() {
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("firstname", "A%");
+
         return new JpaPagingItemReaderBuilder<Customer>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(10)
-                .queryString("SELECT p FROM Pay p WHERE amount >= 2000")
+                .queryString("select c from Customer c where firstname like :firstname")
+                .parameterValues(parameters)
                 .build();
     }
 
