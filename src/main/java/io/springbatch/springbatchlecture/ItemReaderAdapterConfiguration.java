@@ -6,6 +6,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
@@ -58,18 +59,17 @@ public class ItemReaderAdapterConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader<Customer> customItemReader() {
+    public ItemReaderAdapter customItemReader() {
 
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "A%");
+        ItemReaderAdapter reader = new ItemReaderAdapter();
+        reader.setTargetObject(customService());
+        reader.setTargetMethod("joinCustomer");
 
-        return new JpaPagingItemReaderBuilder<Customer>()
-                .name("jpaPagingItemReader")
-                .entityManagerFactory(entityManagerFactory)
-                .pageSize(10)
-                .queryString("select c from Customer c where firstname like :firstname")
-                .parameterValues(parameters)
-                .build();
+        return reader;
+    }
+
+    private CustomService customService() {
+        return new CustomService();
     }
 
     @Bean
