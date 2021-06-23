@@ -73,31 +73,13 @@ public class FlatFilesFormattedConfiguration {
         return reader;
     }
 
-    /*@Bean
-    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
-
-        BeanWrapperFieldExtractor<Customer> fieldExtractor = new BeanWrapperFieldExtractor<>();
-        fieldExtractor.setNames(new String[] {"id","name","age"});
-        fieldExtractor.afterPropertiesSet();
-
-        DelimitedLineAggregator<Customer> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(",");
-        lineAggregator.setFieldExtractor(fieldExtractor);
-
-        return new FlatFileItemWriterBuilder<Customer>()
-                .name("CustomerWriter")
-                .resource(new ClassPathResource("customer.csv"))
-                .lineAggregator(lineAggregator)
-                .build();
-    }*/
-
     @Bean
     public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
         return new FlatFileItemWriterBuilder<Customer>()
                 .name("customerWriter")
                 .resource(new ClassPathResource("customer.csv"))
-                .delimited()
-                .delimiter(",")
+                .formatted()
+                .format("%-2s%-15s%-2d")
                 .names(new String[] {"id", "name", "age"})
                 .build();
     }
