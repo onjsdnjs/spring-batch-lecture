@@ -39,7 +39,6 @@ public class ItemReaderAdapterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job job() throws Exception {
