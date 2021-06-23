@@ -58,9 +58,9 @@ public class JdbcCursorConfiguration {
                 .sql("select id, firstName, lastName, birthdate from customer where firstName like ? order by lastName, firstName")
                 .beanRowMapper(Customer.class)
                 .queryArguments(new String[]{"A%"}, new int[]{Types.VARCHAR})
-                .maxItemCount(20)
-                .currentItemCount(5)
-                .maxRows(100)
+//                .maxItemCount(20)
+//                .currentItemCount(5)
+//                .maxRows(100)
                 .dataSource(dataSource)
                 .build();
     }
