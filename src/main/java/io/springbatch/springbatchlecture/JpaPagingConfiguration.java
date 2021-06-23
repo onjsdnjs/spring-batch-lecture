@@ -32,7 +32,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class JdbcPagingConfiguration {
+public class JpaPagingConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
