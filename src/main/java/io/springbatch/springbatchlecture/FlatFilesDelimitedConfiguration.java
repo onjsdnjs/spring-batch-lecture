@@ -40,7 +40,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class FlatFilesConfiguration {
+public class FlatFilesDelimitedConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
