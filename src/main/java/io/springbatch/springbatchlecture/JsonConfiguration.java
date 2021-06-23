@@ -6,6 +6,9 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.json.JacksonJsonObjectReader;
+import org.springframework.batch.item.json.JsonItemReader;
+import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +22,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class XMLConfiguration {
+public class JsonConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -42,37 +45,13 @@ public class XMLConfiguration {
     }
 
     @Bean
-    public StaxEventItemReader<Customer> customItemReader() {
-        return new StaxEventItemReaderBuilder<Customer>()
-                .name("xmlFileItemReader")
-                .resource(new ClassPathResource("customer.xml"))
-                .addFragmentRootElements("customer")
-                .unmarshaller(itemMarshaller())
+    public JsonItemReader<Customer> customItemReader(){
+        return new JsonItemReaderBuilder<Customer>()
+                .jsonObjectReader(new JacksonJsonObjectReader<>(Customer.class))
+                .resource(new ClassPathResource("/customer.json"))
+                .name("jsonItemReader")
                 .build();
     }
-
-    /*@Bean
-    public StaxEventItemReader<Customer> customItemReader() {
-
-        XStreamMarshaller unmarshaller = new XStreamMarshaller();
-
-        Map<String, Class> aliases = new HashMap<>();
-        aliases.put("customer", Customer.class);
-        aliases.put("id", Long.class);
-        aliases.put("firstName", String.class);
-        aliases.put("lastName", String.class);
-        aliases.put("birthdate", Date.class);
-
-        unmarshaller.setAliases(aliases);
-
-        StaxEventItemReader<Customer> reader = new StaxEventItemReader<>();
-
-        reader.setResource(new ClassPathResource("customers.xml"));
-        reader.setFragmentRootElementName("customer");
-        reader.setUnmarshaller(unmarshaller);
-
-        return reader;
-    }*/
 
     @Bean
     public ItemWriter<Customer> customItemWriter() {
@@ -81,18 +60,6 @@ public class XMLConfiguration {
                 System.out.println(item.toString());
             }
         };
-    }
-
-    @Bean
-    public XStreamMarshaller itemMarshaller() {
-        Map<String, Class<?>> aliases = new HashMap<>();
-        aliases.put("customer", Customer.class);
-        aliases.put("id", Long.class);
-        aliases.put("name", String.class);
-        aliases.put("age", Integer.class);
-        XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
-        xStreamMarshaller.setAliases(aliases);
-        return xStreamMarshaller;
     }
 }
 
