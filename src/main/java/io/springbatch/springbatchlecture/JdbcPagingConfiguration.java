@@ -56,7 +56,7 @@ public class JdbcPagingConfiguration {
                 .build();
     }
 
-    /*@Bean
+    @Bean
     public JdbcPagingItemReader<Customer> customItemReader() throws Exception {
 
         HashMap<String, Object> parameters = new HashMap<>();
@@ -87,9 +87,9 @@ public class JdbcPagingConfiguration {
         queryProvider.setSortKeys(sortKeys);
 
         return queryProvider.getObject();
-    }*/
+    }
 
-    @Bean
+   /* @Bean
     public JdbcPagingItemReader<Customer> customItemReader() {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
@@ -113,7 +113,7 @@ public class JdbcPagingConfiguration {
         reader.setQueryProvider(queryProvider);
 
         return reader;
-    }
+    }*/
 
     @Bean
     public ItemWriter<Customer> customItemWriter() {
