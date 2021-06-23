@@ -10,6 +10,7 @@ import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
@@ -55,7 +56,7 @@ public class JdbcPagingConfiguration {
                 .build();
     }
 
-    @Bean
+    /*@Bean
     public JdbcPagingItemReader<Customer> customItemReader() throws Exception {
 
         HashMap<String, Object> parameters = new HashMap<>();
@@ -86,6 +87,32 @@ public class JdbcPagingConfiguration {
         queryProvider.setSortKeys(sortKeys);
 
         return queryProvider.getObject();
+    }*/
+
+    @Bean
+    public JdbcPagingItemReader<Customer> customItemReader() {
+        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+
+        reader.setDataSource(this.dataSource);
+        reader.setFetchSize(5);
+        reader.setPageSize(5);
+        reader.setSaveState(true);
+        reader.setRowMapper(new CustomerRowMapper());
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("firstname", "A%");
+        reader.setParameterValues(parameters);
+
+        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+        queryProvider.setFromClause("from customer");
+        queryProvider.setWhereClause("where firstname like :firstname");
+        Map<String, Order> sortKeys = new HashMap<>(1);
+        sortKeys.put("id", Order.ASCENDING);
+        queryProvider.setSortKeys(sortKeys);
+        reader.setQueryProvider(queryProvider);
+
+        return reader;
     }
 
     @Bean
