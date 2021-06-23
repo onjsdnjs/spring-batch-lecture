@@ -15,9 +15,12 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
+import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
@@ -59,15 +63,33 @@ public class FlatFilesConfiguration {
     }
 
     @Bean
-    public CustomItemReader customItemReader() {
+    public ListItemReader customItemReader() {
 
         List<Customer> customers = Arrays.asList(new Customer(1, "hong gil dong1", 41),
                 new Customer(2, "hong gil dong2", 42),
                 new Customer(3, "hong gil dong3", 43));
 
-        CustomItemReader<Customer> reader = new CustomItemReader(customers);
+        ListItemReader<Customer> reader = new ListItemReader<>(customers);
         return reader;
     }
+
+    /*@Bean
+    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
+
+        BeanWrapperFieldExtractor<Customer> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(new String[] {"id","name","age"});
+        fieldExtractor.afterPropertiesSet();
+
+        DelimitedLineAggregator<Customer> lineAggregator = new DelimitedLineAggregator<>();
+        lineAggregator.setDelimiter(",");
+        lineAggregator.setFieldExtractor(fieldExtractor);
+
+        return new FlatFileItemWriterBuilder<Customer>()
+                .name("CustomerWriter")
+                .resource(new ClassPathResource("customer.csv"))
+                .lineAggregator(lineAggregator)
+                .build();
+    }*/
 
     @Bean
     public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
@@ -75,7 +97,7 @@ public class FlatFilesConfiguration {
                 .name("customerWriter")
                 .resource(new ClassPathResource("customer.csv"))
                 .delimited()
-                .delimiter("|")
+                .delimiter(",")
                 .names(new String[] {"id", "name", "age"})
                 .build();
     }
