@@ -52,7 +52,7 @@ public class ItemReaderAdapterConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(10)
+                .<String,String>chunk(10)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
@@ -73,11 +73,9 @@ public class ItemReaderAdapterConfiguration {
     }
 
     @Bean
-    public ItemWriter<Customer> customItemWriter() {
+    public ItemWriter<String> customItemWriter() {
         return items -> {
-            for (Customer item : items) {
-                System.out.println(item.toString());
-            }
+                System.out.println(items);
         };
     }
 }
