@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class JsonConfiguration {
+public class JdbcCursorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
