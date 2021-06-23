@@ -46,19 +46,7 @@ public class XMLConfiguration {
     }
 
     public FlatFileItemReader itemReader() {
-        return new FlatFileItemReaderBuilder<Customer>()
-                .name("flatFile")
-                .resource(new ClassPathResource("customer.xml"))
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
-                .targetType(Customer.class)
-                .linesToSkip(1)
-                .fixedLength()
-                .strict(false)
-                .addColumns(new Range(1,5))
-                .addColumns(new Range(6,9))
-                .addColumns(new Range(10,11))
-                .names("name","year","age")
-                .build();
+        return null;
     }
 
     @Bean
