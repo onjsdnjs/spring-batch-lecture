@@ -35,7 +35,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class ItemReaderAdapterConfiguration {
+public class FlatFilesConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
