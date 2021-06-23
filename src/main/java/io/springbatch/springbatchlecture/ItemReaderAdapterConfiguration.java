@@ -34,7 +34,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class JpaPagingConfiguration {
+public class ItemReaderAdapterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
