@@ -10,6 +10,7 @@ import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
@@ -17,6 +18,7 @@ import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -36,7 +38,7 @@ public class JpaPagingConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    public final DataSource dataSource;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job job() throws Exception {
@@ -49,43 +51,20 @@ public class JpaPagingConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(3)
+                .<Customer, Customer>chunk(10)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
     }
 
     @Bean
-    public JdbcPagingItemReader<Customer> customItemReader() throws Exception {
-
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "A%");
-
-        return new JdbcPagingItemReaderBuilder<Customer>()
-                .name("jdbcPagingItemReader")
+    public JpaPagingItemReader<Customer> customItemReader() {
+        return new JpaPagingItemReaderBuilder<Customer>()
+                .name("jpaPagingItemReader")
+                .entityManagerFactory(entityManagerFactory)
                 .pageSize(10)
-                .fetchSize(10)
-                .dataSource(dataSource)
-                .rowMapper(new BeanPropertyRowMapper<>(Customer.class))
-                .queryProvider(createQueryProvider())
-				.parameterValues(parameters)
+                .queryString("SELECT p FROM Pay p WHERE amount >= 2000")
                 .build();
-    }
-
-    @Bean
-    public PagingQueryProvider createQueryProvider() throws Exception {
-        SqlPagingQueryProviderFactoryBean queryProvider = new SqlPagingQueryProviderFactoryBean();
-        queryProvider.setDataSource(dataSource); // Database에 맞는 PagingQueryProvider를 선택하기 위해
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
-        queryProvider.setFromClause("from customer");
-		queryProvider.setWhereClause("where firstname like :firstname");
-
-        Map<String, Order> sortKeys = new HashMap<>(1);
-        sortKeys.put("id", Order.ASCENDING);
-
-        queryProvider.setSortKeys(sortKeys);
-
-        return queryProvider.getObject();
     }
 
     @Bean
