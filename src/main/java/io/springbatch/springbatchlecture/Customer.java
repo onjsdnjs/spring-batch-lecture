@@ -16,15 +16,17 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
 public class Customer {
 
-	private final long id;
-	private final String name;
-	private final int age;
+	private long id;
+	private String name;
+	private int age;
 
 }
