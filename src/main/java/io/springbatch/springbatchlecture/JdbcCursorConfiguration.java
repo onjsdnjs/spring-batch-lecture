@@ -6,16 +6,21 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
+import javax.sql.DataSource;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +31,7 @@ public class JdbcCursorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final DataSource dataSource;
 
     @Bean
     public Job job() {
@@ -45,11 +51,17 @@ public class JdbcCursorConfiguration {
     }
 
     @Bean
-    public JsonItemReader<Customer> customItemReader(){
-        return new JsonItemReaderBuilder<Customer>()
-                .jsonObjectReader(new JacksonJsonObjectReader<>(Customer.class))
-                .resource(new ClassPathResource("customer.json"))
-                .name("jsonItemReader")
+    public JdbcCursorItemReader<Customer> customItemReader() {
+        return new JdbcCursorItemReaderBuilder()
+                .name("jdbcCursorItemReader")
+                .fetchSize(10)
+                .sql("select id, firstName, lastName, birthdate from customer where firstName like ? order by lastName, firstName")
+                .beanRowMapper(Customer.class)
+                .queryArguments(new String[]{"A%"}, new int[]{Types.VARCHAR})
+                .maxItemCount(20)
+                .currentItemCount(5)
+                .maxRows(100)
+                .dataSource(dataSource)
                 .build();
     }
 
