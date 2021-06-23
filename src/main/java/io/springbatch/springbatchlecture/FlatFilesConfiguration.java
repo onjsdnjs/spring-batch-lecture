@@ -13,6 +13,8 @@ import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuild
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
@@ -67,10 +70,14 @@ public class FlatFilesConfiguration {
     }
 
     @Bean
-    public ItemWriter<String> customItemWriter() {
-        return items -> {
-                System.out.println(items);
-        };
+    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
+        return new FlatFileItemWriterBuilder<Customer>()
+                .name("customerWriter")
+                .resource(new ClassPathResource("customer.csv"))
+                .delimited()
+                .delimiter("|")
+                .names(new String[] {"id", "name", "age"})
+                .build();
     }
 }
 
