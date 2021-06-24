@@ -5,13 +5,15 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
+import org.springframework.batch.item.support.CompositeItemProcessor;
+import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -40,25 +42,27 @@ public class CompositionItemConfiguration {
                         return i > 10 ? null : "item";
                     }
                 })
-                .writer(customItemWriter())
+                .processor(customItemProcessor())
+                .writer(new ItemWriter<String>() {
+                    @Override
+                    public void write(List<? extends String> items) throws Exception {
+                        System.out.println(items);
+                    }
+                })
                 .build();
     }
 
-
-
     @Bean
-    public ItemWriterAdapter customItemWriter() {
+    public CompositeItemProcessor customItemProcessor() {
 
-        ItemWriterAdapter  writer = new ItemWriterAdapter();
-         writer.setTargetObject(customService());
-         writer.setTargetMethod("joinCustomer");
+        CompositeItemProcessor<String,String> compositeProcessor = new CompositeItemProcessor<>();
+        List itemProcessors = new ArrayList();
+        itemProcessors.add(new CustomItemProcessor1());
+        itemProcessors.add(new CustomItemProcessor2());
 
-        return  writer;
-    }
-
-    @Bean
-    public CustomService customService() {
-        return new CustomService();
+        return new CompositeItemProcessorBuilder<>()
+                .delegates(itemProcessors)
+	            .build();
     }
 }
 
