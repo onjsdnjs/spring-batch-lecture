@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class ClassifierConfiguration {
+public class RepeatConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -37,40 +37,29 @@ public class ClassifierConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<ProcessorInfo, ProcessorInfo>chunk(10)
-                .reader(new ItemReader<ProcessorInfo>() {
+                .<String, String>chunk(10)
+                .reader(new ItemReader<String>() {
                     int i = 0;
                     @Override
-                    public ProcessorInfo read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
                         i++;
-                        ProcessorInfo processorInfo = ProcessorInfo.builder().id(i).build();
-                        return i > 3 ? null : processorInfo;
+
+                        return i > 3 ? null : "item" + i;
                     }
                 })
-                .processor(customItemProcessor())
-                .writer(new ItemWriter<ProcessorInfo>() {
+                .processor(new ItemProcessor<String, String>() {
                     @Override
-                    public void write(List<? extends ProcessorInfo> items) throws Exception {
+                    public String process(String item) throws Exception {
+                        return item;
+                    }
+                })
+                .writer(new ItemWriter<String>() {
+                    @Override
+                    public void write(List<? extends String> items) throws Exception {
                         System.out.println(items);
                     }
                 })
                 .build();
-    }
-
-    @Bean
-    public ItemProcessor customItemProcessor() {
-
-        ClassifierCompositeItemProcessor processor = new ClassifierCompositeItemProcessor();
-
-        ProcessorClassifier<ItemProcessor> classifier = new ProcessorClassifier<>();
-        Map<Integer, ItemProcessor<ProcessorInfo, ProcessorInfo>> processorMap = new HashMap<>();
-        processorMap.put(1, new CustomItemProcessor1());
-        processorMap.put(2, new CustomItemProcessor2());
-        processorMap.put(3, new CustomItemProcessor3());
-        classifier.setProcessorMap(processorMap);
-        processor.setClassifier(classifier);
-
-        return processor;
     }
 }
 
