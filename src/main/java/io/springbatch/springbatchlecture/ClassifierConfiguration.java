@@ -17,7 +17,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class CompositionItemConfiguration {
+public class ClassifierConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
