@@ -6,6 +6,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.*;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.batch.item.json.JsonFileItemWriter;
@@ -75,12 +76,24 @@ public class JdbcBatchConfiguration {
     }
 
     @Bean
-    public JsonFileItemWriter<Customer> customItemWriter() {
-        return new JsonFileItemWriterBuilder<Customer>()
-                .jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
-                .resource(new ClassPathResource("customer.json"))
-                .name("customerJsonFileItemWriter")
+    public JdbcBatchItemWriter<Customer> customItemWriter() {
+        return new JdbcBatchItemWriterBuilder<Customer>()
+                .dataSource(dataSource)
+                .sql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)")
+                .beanMapped()
                 .build();
     }
+
+    /*@Bean
+    public JdbcBatchItemWriter<Customer> customItemWriter() {
+        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
+
+        itemWriter.setDataSource(this.dataSource);
+        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
+        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
+        itemWriter.afterPropertiesSet();
+
+        return itemWriter;
+    }*/
 }
 
