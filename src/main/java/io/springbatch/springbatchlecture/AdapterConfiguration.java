@@ -5,6 +5,12 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.NonTransientResourceException;
+import org.springframework.batch.item.ParseException;
+import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
+import org.springframework.batch.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
@@ -30,8 +36,6 @@ public class AdapterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource dataSource;
-    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job job() throws Exception {
@@ -44,46 +48,31 @@ public class AdapterConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(10)
-                .reader(customItemReader())
+                .<String, String>chunk(10)
+                .reader(new ItemReader<String>() {
+                    @Override
+                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                        return "item";
+                    }
+                })
                 .writer(customItemWriter())
                 .build();
     }
 
+
+
     @Bean
-    public JdbcPagingItemReader<Customer> customItemReader() {
+    public ItemWriterAdapter customItemWriter() {
+        ItemWriterAdapter  writer = new ItemWriterAdapter();
+         writer.setTargetObject(customService());
+         writer.setTargetMethod("joinCustomer");
 
-        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
-
-        reader.setDataSource(this.dataSource);
-        reader.setFetchSize(10);
-        reader.setRowMapper(new CustomerRowMapper());
-
-        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
-        queryProvider.setFromClause("from customer");
-        queryProvider.setWhereClause("where firstname like :firstname");
-
-        Map<String, Order> sortKeys = new HashMap<>(1);
-
-        sortKeys.put("id", Order.ASCENDING);
-        queryProvider.setSortKeys(sortKeys);
-        reader.setQueryProvider(queryProvider);
-
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "C%");
-
-        reader.setParameterValues(parameters);
-
-        return reader;
+        return  writer;
     }
 
     @Bean
-    public JpaItemWriter<Customer> customItemWriter() {
-        return new JpaItemWriterBuilder<Customer>()
-                .entityManagerFactory(entityManagerFactory)
-                .usePersist(true)
-                .build();
+    public CustomService customService() {
+        return new CustomService();
     }
 }
 
