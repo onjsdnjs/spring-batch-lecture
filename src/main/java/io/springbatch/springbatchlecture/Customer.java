@@ -14,5 +14,4 @@ public class Customer {
     private final String firstName;
     private final String lastName;
     private final Date birthdate;
-
 }
