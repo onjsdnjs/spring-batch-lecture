@@ -7,6 +7,9 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
+import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
+import org.springframework.batch.item.json.JsonFileItemWriter;
+import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
 import org.springframework.batch.item.xml.StaxEventItemWriter;
 import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +23,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class XMLConfiguration {
+public class JsonConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -72,30 +75,12 @@ public class XMLConfiguration {
     }
 
     @Bean
-    public StaxEventItemWriter customItemWriter() {
-        return new StaxEventItemWriterBuilder<Customer>()
-                .name("customersWriter")
-                .marshaller(itemMarshaller())
-                .resource(new ClassPathResource("customer.xml"))
-                .rootTagName("customer")
-                .overwriteOutput(true)
+    public JsonFileItemWriter<Customer> customItemWriter() {
+        return new JsonFileItemWriterBuilder<Customer>()
+                .jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
+                .resource(new ClassPathResource("customer.json"))
+                .name("customerJsonFileItemWriter")
                 .build();
-
     }
-
-    @Bean
-    public XStreamMarshaller itemMarshaller() {
-        Map<String, Class<?>> aliases = new HashMap<>();
-        aliases.put("customer", Customer.class);
-        aliases.put("id", Long.class);
-        aliases.put("firstName", String.class);
-        aliases.put("lastName", String.class);
-        aliases.put("birthdate", Date.class);
-        XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
-        xStreamMarshaller.setAliases(aliases);
-        return xStreamMarshaller;
-    }
-
-
 }
 
