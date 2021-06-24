@@ -9,26 +9,9 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
-import org.springframework.batch.item.database.*;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
-import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
-import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
-import org.springframework.batch.item.json.JsonFileItemWriter;
-import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
-import org.springframework.batch.item.xml.StaxEventItemWriter;
-import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.oxm.xstream.XStreamMarshaller;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
@@ -50,9 +33,11 @@ public class AdapterConfiguration {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(10)
                 .reader(new ItemReader<String>() {
+                    int i = 0;
                     @Override
                     public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-                        return "item";
+                        i++;
+                        return i > 10 ? null : "item";
                     }
                 })
                 .writer(customItemWriter())
@@ -63,6 +48,7 @@ public class AdapterConfiguration {
 
     @Bean
     public ItemWriterAdapter customItemWriter() {
+
         ItemWriterAdapter  writer = new ItemWriterAdapter();
          writer.setTargetObject(customService());
          writer.setTargetMethod("joinCustomer");
