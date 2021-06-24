@@ -24,7 +24,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class JdbcBatchConfiguration {
+public class JpaConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
