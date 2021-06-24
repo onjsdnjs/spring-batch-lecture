@@ -7,6 +7,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.batch.item.json.JsonFileItemWriter;
@@ -19,6 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.*;
 
@@ -29,6 +31,7 @@ public class JpaConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job job() throws Exception {
@@ -68,7 +71,7 @@ public class JpaConfiguration {
         reader.setQueryProvider(queryProvider);
 
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "A%");
+        parameters.put("firstname", "C%");
 
         reader.setParameterValues(parameters);
 
@@ -76,24 +79,11 @@ public class JpaConfiguration {
     }
 
     @Bean
-    public JdbcBatchItemWriter<Customer> customItemWriter() {
-        return new JdbcBatchItemWriterBuilder<Customer>()
-                .dataSource(dataSource)
-                .sql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)")
-                .beanMapped()
+    public JpaItemWriter<Customer> customItemWriter() {
+        return new JpaItemWriterBuilder<Customer>()
+                .entityManagerFactory(entityManagerFactory)
+                .usePersist(true)
                 .build();
     }
-
-    /*@Bean
-    public JdbcBatchItemWriter<Customer> customItemWriter() {
-        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
-
-        itemWriter.setDataSource(this.dataSource);
-        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
-        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
-        itemWriter.afterPropertiesSet();
-
-        return itemWriter;
-    }*/
 }
 

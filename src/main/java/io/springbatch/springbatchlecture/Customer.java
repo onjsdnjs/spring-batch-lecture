@@ -2,16 +2,26 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "customer2")
+@Entity
 public class Customer {
 
-    private final long id;
-    private final String firstName;
-    private final String lastName;
-    private final Date birthdate;
+    @Id
+    private long id;
+    private String firstname;
+    private String lastname;
+    private Date birthdate;
 }
