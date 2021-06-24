@@ -43,7 +43,6 @@ public class RepeatConfiguration {
                     @Override
                     public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
                         i++;
-
                         return i > 3 ? null : "item" + i;
                     }
                 })
