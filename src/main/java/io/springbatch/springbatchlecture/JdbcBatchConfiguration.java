@@ -23,7 +23,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class JsonConfiguration {
+public class JdbcBatchConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
