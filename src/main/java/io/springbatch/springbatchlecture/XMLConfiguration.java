@@ -5,37 +5,17 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.*;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
-import org.springframework.batch.item.json.JacksonJsonObjectReader;
-import org.springframework.batch.item.json.JsonItemReader;
-import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
-import org.springframework.batch.item.support.ListItemReader;
-import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
+import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
+import org.springframework.batch.item.xml.StaxEventItemWriter;
+import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.sql.Types;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -44,6 +24,7 @@ public class XMLConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final DataSource dataSource;
 
     @Bean
     public Job job() throws Exception {
@@ -56,32 +37,65 @@ public class XMLConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<String,String>chunk(10)
+                .<Customer, Customer>chunk(10)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
     }
 
     @Bean
-    public ListItemReader customItemReader() {
+    public JdbcPagingItemReader<Customer> customItemReader() {
 
-        List<Customer> customers = Arrays.asList(new Customer(1, "hong gil dong1", 41),
-                new Customer(2, "hong gil dong2", 42),
-                new Customer(3, "hong gil dong3", 43));
+        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
-        ListItemReader<Customer> reader = new ListItemReader<>(customers);
+        reader.setDataSource(this.dataSource);
+        reader.setFetchSize(10);
+        reader.setRowMapper(new CustomerRowMapper());
+
+        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+        queryProvider.setFromClause("from customer");
+        queryProvider.setWhereClause("where firstname like :firstname");
+
+        Map<String, Order> sortKeys = new HashMap<>(1);
+
+        sortKeys.put("id", Order.ASCENDING);
+        queryProvider.setSortKeys(sortKeys);
+        reader.setQueryProvider(queryProvider);
+
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("firstname", "A%");
+
+        reader.setParameterValues(parameters);
+
         return reader;
     }
 
     @Bean
-    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
-        return new FlatFileItemWriterBuilder<Customer>()
-                .name("customerWriter")
-                .resource(new ClassPathResource("customer.csv"))
-                .formatted()
-                .format("%-2s%-15s%-2d")
-                .names(new String[] {"id", "name", "age"})
+    public StaxEventItemWriter customItemWriter() {
+        return new StaxEventItemWriterBuilder<Customer>()
+                .name("customersWriter")
+                .marshaller(itemMarshaller())
+                .resource(new ClassPathResource("customer.xml"))
+                .rootTagName("customer")
+                .overwriteOutput(true)
                 .build();
+
     }
+
+    @Bean
+    public XStreamMarshaller itemMarshaller() {
+        Map<String, Class<?>> aliases = new HashMap<>();
+        aliases.put("customer", Customer.class);
+        aliases.put("id", Long.class);
+        aliases.put("firstName", String.class);
+        aliases.put("lastName", String.class);
+        aliases.put("birthdate", Date.class);
+        XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
+        xStreamMarshaller.setAliases(aliases);
+        return xStreamMarshaller;
+    }
+
+
 }
 
