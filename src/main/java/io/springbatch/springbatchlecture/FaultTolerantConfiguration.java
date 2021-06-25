@@ -29,7 +29,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class RepeatConfiguration {
+public class FaultTolerantConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
