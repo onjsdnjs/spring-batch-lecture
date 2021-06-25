@@ -7,8 +7,6 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
-import org.springframework.batch.core.step.skip.NeverSkipItemSkipPolicy;
-import org.springframework.batch.core.step.skip.SkipException;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +18,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class SkipConfiguration {
+public class RetryConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -53,7 +51,7 @@ public class SkipConfiguration {
     public LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy(){
 
         Map<Class<? extends Throwable>, Boolean> skippableExceptionClasses = new HashMap<>();
-        skippableExceptionClasses.put(SkippableException.class, true);
+        skippableExceptionClasses.put(RetryableException.class, true);
 
         LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy = new LimitCheckingItemSkipPolicy(2, skippableExceptionClasses);
 
@@ -74,15 +72,15 @@ public class SkipConfiguration {
 
     @Bean
     @StepScope
-    public SkipItemProcessor processor() {
-        SkipItemProcessor processor = new SkipItemProcessor();
+    public RetryItemProcessor processor() {
+        RetryItemProcessor processor = new RetryItemProcessor();
         return processor;
     }
 
     @Bean
     @StepScope
-    public SkipItemWriter writer() {
-        SkipItemWriter writer = new SkipItemWriter();
+    public RetryItemWriter writer() {
+        RetryItemWriter writer = new RetryItemWriter();
         return writer;
     }
 }
