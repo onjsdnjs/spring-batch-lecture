@@ -11,9 +11,15 @@ public class RetryItemWriter implements ItemWriter<String> {
 	@Override
 	public void write(List<? extends String> items) throws Exception {
 		for (String item : items) {
-			if(item.equals("-12")) {
+			if(item.equals("0")) {
 				cnt++;
-				throw new RetryableException("Write failed. cnt:" + cnt);
+				if(cnt >= 3) {
+					System.out.println("Success!");
+				}
+				else {
+					System.out.println("item " + item + " failed");
+					throw new RetryableException("Write failed. cnt:" + cnt);
+				}
 			}
 			else {
 				System.out.println(item);
