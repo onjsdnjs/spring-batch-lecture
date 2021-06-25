@@ -38,7 +38,7 @@ public class SkipConfiguration {
                 .writer(writer())
                 .faultTolerant()
                 .skip(SkippableException.class)
-                .skipLimit(3)
+                .skipLimit(1)
                 .build();
     }
 
