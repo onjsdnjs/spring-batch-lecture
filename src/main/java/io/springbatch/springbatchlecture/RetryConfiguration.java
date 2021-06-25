@@ -10,6 +10,7 @@ import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,23 +40,22 @@ public class RetryConfiguration {
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
-//                .noSkip(SkippableException.class) // 아래 설정이 위의 설정을 덮어씀, skip() 설정이 우선
-                .skipPolicy(limitCheckingItemSkipPolicy())
-//                .skip(SkippableException.class)
-//                .skipLimit(2)
-//                .noRollback(SkippableException.class)
+                .noRetry(NoRetryException.class)
+                .retry(RetryableException.class)
+                .retryLimit(3)
+//                .retryPolicy(new SimpleRetryPolicy())
                 .build();
     }
 
     @Bean
-    public LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy(){
+    public SimpleRetryPolicy limitCheckingItemSkipPolicy(){
 
-        Map<Class<? extends Throwable>, Boolean> skippableExceptionClasses = new HashMap<>();
-        skippableExceptionClasses.put(RetryableException.class, true);
+        Map<Class<? extends Throwable>, Boolean> retryableExceptionClasses = new HashMap<>();
+        retryableExceptionClasses.put(RetryableException.class, true);
 
-        LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy = new LimitCheckingItemSkipPolicy(2, skippableExceptionClasses);
+        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, retryableExceptionClasses);
 
-        return limitCheckingItemSkipPolicy;
+        return simpleRetryPolicy;
     }
 
     @Bean
