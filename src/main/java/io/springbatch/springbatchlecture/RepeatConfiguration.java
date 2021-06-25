@@ -10,6 +10,7 @@ import org.springframework.batch.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
 import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
+import org.springframework.batch.repeat.CompletionPolicy;
 import org.springframework.batch.repeat.RepeatCallback;
 import org.springframework.batch.repeat.RepeatContext;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -60,14 +61,15 @@ public class RepeatConfiguration {
                         RepeatTemplate template = new RepeatTemplate();
                         // 반복할 때마다 count 변수의 값을 1씩 증가
                         // count 값이 chunkSize 값보다 크거나 같을 때 반복문 종료
-                        template.setCompletionPolicy(new SimpleCompletionPolicy(2));
+//                        template.setCompletionPolicy(new SimpleCompletionPolicy(2));
 //                        template.setCompletionPolicy(new TimeoutTerminationPolicy(3000));
-                        template.setExceptionHandler(new SimpleLimitExceptionHandler());
+                        template.setExceptionHandler(simpleLimitExceptionHanlder());
                         template.iterate(new RepeatCallback() {
 
                             public RepeatStatus doInIteration(RepeatContext context) {
                                System.out.println("repeatTest");
-                                return RepeatStatus.CONTINUABLE;
+                               throw new RuntimeException("test");
+//                                return RepeatStatus.CONTINUABLE;
                             }
 
                         });
@@ -82,6 +84,11 @@ public class RepeatConfiguration {
                     }
                 })
                 .build();
+    }
+
+    @Bean
+    public SimpleLimitExceptionHandler simpleLimitExceptionHanlder(){
+        return new SimpleLimitExceptionHandler(3);
     }
 }
 
