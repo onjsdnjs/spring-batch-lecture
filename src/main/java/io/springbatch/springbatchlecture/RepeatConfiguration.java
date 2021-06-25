@@ -61,15 +61,17 @@ public class RepeatConfiguration {
                         RepeatTemplate template = new RepeatTemplate();
                         // 반복할 때마다 count 변수의 값을 1씩 증가
                         // count 값이 chunkSize 값보다 크거나 같을 때 반복문 종료
-//                        template.setCompletionPolicy(new SimpleCompletionPolicy(2));
-//                        template.setCompletionPolicy(new TimeoutTerminationPolicy(3000));
-                        template.setExceptionHandler(simpleLimitExceptionHanlder());
+                        template.setCompletionPolicy(new SimpleCompletionPolicy(2));
+                        // 소요된 시간이 설정된 시간보다 클 경우 반복문 종료
+                        template.setCompletionPolicy(new TimeoutTerminationPolicy(3000));
+                        // 예외 제한 횟수만큼 반복문 실행
+                        template.setExceptionHandler(simpleLimitExceptionHandler());
                         template.iterate(new RepeatCallback() {
 
                             public RepeatStatus doInIteration(RepeatContext context) {
                                System.out.println("repeatTest");
-                               throw new RuntimeException("test");
-//                                return RepeatStatus.CONTINUABLE;
+//                               throw new RuntimeException("test");
+                                return RepeatStatus.CONTINUABLE;
                             }
 
                         });
@@ -87,7 +89,7 @@ public class RepeatConfiguration {
     }
 
     @Bean
-    public SimpleLimitExceptionHandler simpleLimitExceptionHanlder(){
+    public SimpleLimitExceptionHandler simpleLimitExceptionHandler(){
         return new SimpleLimitExceptionHandler(3);
     }
 }
