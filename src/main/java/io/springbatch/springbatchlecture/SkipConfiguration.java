@@ -4,28 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.*;
-import org.springframework.batch.item.adapter.ItemWriterAdapter;
-import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
-import org.springframework.batch.item.support.CompositeItemProcessor;
-import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
-import org.springframework.batch.repeat.CompletionPolicy;
-import org.springframework.batch.repeat.RepeatCallback;
-import org.springframework.batch.repeat.RepeatContext;
-import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.batch.repeat.exception.SimpleLimitExceptionHandler;
-import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
-import org.springframework.batch.repeat.policy.TimeoutTerminationPolicy;
-import org.springframework.batch.repeat.support.RepeatTemplate;
-import org.springframework.classify.PatternMatchingClassifier;
+import org.springframework.batch.core.step.skip.SkipException;
+import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
@@ -46,29 +33,39 @@ public class SkipConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(5)
-                .reader(new ItemReader<String>() {
-                    int i = 0;
-                    @Override
-                    public String read() {
-                        throw new IllegalArgumentException("skip");
-//                        i++;
-//                        return i > 3 ? null : "item" + i;
-                    }
-                })
-                .processor((ItemProcessor<String, String>) item -> {
-                    throw new IllegalStateException("retry");
-//                    return item;
-                })
-                .writer(items -> System.out.println(items))
+                .reader(reader())
+                .processor(processor())
+                .writer(writer())
                 .faultTolerant()
-                .skip(IllegalArgumentException.class)
-                .retry(IllegalStateException.class)
+                .skip(SkippableException.class)
+                .skipLimit(3)
                 .build();
     }
 
     @Bean
-    public SimpleLimitExceptionHandler simpleLimitExceptionHandler(){
-        return new SimpleLimitExceptionHandler(3);
+    public ListItemReader<String> reader() {
+
+        List<String> items = new ArrayList<>();
+
+        for(int i = 0; i < 30; i++) {
+            items.add(String.valueOf(i));
+        }
+
+        return new ListItemReader<>(items);
+    }
+
+    @Bean
+    @StepScope
+    public SkipItemProcessor processor() {
+        SkipItemProcessor processor = new SkipItemProcessor();
+        return processor;
+    }
+
+    @Bean
+    @StepScope
+    public SkipItemWriter writer() {
+        SkipItemWriter writer = new SkipItemWriter();
+        return writer;
     }
 }
 
