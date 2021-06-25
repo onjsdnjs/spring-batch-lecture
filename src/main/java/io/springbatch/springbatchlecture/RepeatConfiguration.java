@@ -13,7 +13,9 @@ import org.springframework.batch.item.support.builder.CompositeItemProcessorBuil
 import org.springframework.batch.repeat.RepeatCallback;
 import org.springframework.batch.repeat.RepeatContext;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.repeat.exception.SimpleLimitExceptionHandler;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
+import org.springframework.batch.repeat.policy.TimeoutTerminationPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
 import org.springframework.classify.PatternMatchingClassifier;
 import org.springframework.context.annotation.Bean;
@@ -59,6 +61,8 @@ public class RepeatConfiguration {
                         // 반복할 때마다 count 변수의 값을 1씩 증가
                         // count 값이 chunkSize 값보다 크거나 같을 때 반복문 종료
                         template.setCompletionPolicy(new SimpleCompletionPolicy(2));
+//                        template.setCompletionPolicy(new TimeoutTerminationPolicy(3000));
+                        template.setExceptionHandler(new SimpleLimitExceptionHandler());
                         template.iterate(new RepeatCallback() {
 
                             public RepeatStatus doInIteration(RepeatContext context) {
