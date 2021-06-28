@@ -71,14 +71,12 @@ public class RetryConfiguration {
     }
 
     @Bean
-    @StepScope
     public RetryItemProcessor processor() {
         RetryItemProcessor processor = new RetryItemProcessor();
         return processor;
     }
 
     @Bean
-    @StepScope
     public RetryItemWriter writer() {
         RetryItemWriter writer = new RetryItemWriter();
         return writer;
