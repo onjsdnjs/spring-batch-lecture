@@ -73,14 +73,12 @@ public class SkipConfiguration {
     }
 
     @Bean
-    @StepScope
     public SkipItemProcessor processor() {
         SkipItemProcessor processor = new SkipItemProcessor();
         return processor;
     }
 
     @Bean
-    @StepScope
     public SkipItemWriter writer() {
         SkipItemWriter writer = new SkipItemWriter();
         return writer;
