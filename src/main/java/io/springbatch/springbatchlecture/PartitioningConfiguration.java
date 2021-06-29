@@ -1,21 +1,20 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.integration.async.AsyncItemProcessor;
-import org.springframework.batch.integration.async.AsyncItemWriter;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -23,7 +22,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
@@ -31,46 +31,84 @@ public class PartitioningConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final DataSource dataSource;
 
     @Bean
-    public Job job() {
-        return jobBuilderFactory.get("batchJob")
-                .start(flow1())
-                .split(taskExecutor()).add(flow2())
-                .end()
+    public Job job() throws Exception {
+        return jobBuilderFactory.get("job")
+                .start(step1())
                 .build();
     }
 
     @Bean
-    public Flow flow1() {
-        return new FlowBuilder<Flow>("flow1")
-                .start(stepBuilderFactory.get("step1")
-                        .tasklet(tasklet()).build())
+    public ColumnRangePartitioner partitioner() {
+        ColumnRangePartitioner columnRangePartitioner = new ColumnRangePartitioner();
+
+        columnRangePartitioner.setColumn("id");
+        columnRangePartitioner.setDataSource(this.dataSource);
+        columnRangePartitioner.setTable("customer");
+
+        return columnRangePartitioner;
+    }
+
+    @Bean
+    @StepScope
+    public JdbcPagingItemReader<Customer> pagingItemReader(
+            @Value("#{stepExecutionContext['minValue']}")Long minValue,
+            @Value("#{stepExecutionContext['maxValue']}")Long maxValue) {
+        System.out.println("reading " + minValue + " to " + maxValue);
+        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+
+        reader.setDataSource(this.dataSource);
+        reader.setFetchSize(1000);
+        reader.setRowMapper(new CustomerRowMapper());
+
+        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+        queryProvider.setFromClause("from customer");
+        queryProvider.setWhereClause("where id >= " + minValue + " and id < " + maxValue);
+
+        Map<String, Order> sortKeys = new HashMap<>(1);
+
+        sortKeys.put("id", Order.ASCENDING);
+
+        queryProvider.setSortKeys(sortKeys);
+
+        reader.setQueryProvider(queryProvider);
+
+        return reader;
+    }
+
+    @Bean
+    @StepScope
+    public JdbcBatchItemWriter<Customer> customerItemWriter() {
+        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
+
+        itemWriter.setDataSource(this.dataSource);
+        itemWriter.setSql("INSERT INTO NEW_CUSTOMER VALUES (:id, :firstName, :lastName, :birthdate)");
+        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
+        itemWriter.afterPropertiesSet();
+
+        return itemWriter;
+    }
+
+    @Bean
+    public Step step1() throws Exception {
+        return stepBuilderFactory.get("step1")
+                .partitioner(slaveStep().getName(), partitioner())
+                .step(slaveStep())
+                .gridSize(4)
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
     @Bean
-    public Flow flow2() {
-        return new FlowBuilder<Flow>("flow2")
-                .start(stepBuilderFactory.get("step2")
-                        .tasklet(tasklet()).build())
-                .next(stepBuilderFactory.get("step3")
-                        .tasklet(tasklet()).build())
+    public Step slaveStep() {
+        return stepBuilderFactory.get("slaveStep")
+                .<Customer, Customer>chunk(1000)
+                .reader(pagingItemReader(null, null))
+                .writer(customerItemWriter())
                 .build();
-    }
-
-    @Bean
-    public Tasklet tasklet() {
-        return new CustomTasklet();
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor(){
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setThreadNamePrefix("async-thread-");
-        return executor;
     }
 }
 
