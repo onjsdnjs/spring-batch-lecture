@@ -43,6 +43,7 @@ public class MultiThreadStepConfiguration {
                 .reader(pagingItemReader())
                 .writer(customItemWriter())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(2)
                 .build();
     }
 
