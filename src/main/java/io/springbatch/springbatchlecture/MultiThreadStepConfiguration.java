@@ -22,7 +22,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class AsyncConfiguration {
+public class MultiThreadStepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
