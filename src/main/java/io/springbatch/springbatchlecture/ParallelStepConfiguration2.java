@@ -29,37 +29,37 @@ public class ParallelStepConfiguration2 {
 
         FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("split");
 
-        Flow flow = flowBuilder.split(new SimpleAsyncTaskExecutor())
+        Flow flow = flowBuilder.split(taskExecutor())
                 .add(flow1(), flow2())
                 .end();
 
         return jobBuilderFactory.get("batchJob")
-                .start(myStep1())
-                .next(myStep2())
-                .split(taskExecutor()).add(flow)
+                .start(customStep1())
+                .next(customStep2())
+                .on("COMPLETED").to(flow)
                 .end()
                 .build();
     }
 
     @Bean
-    public Step myStep1() {
-        return stepBuilderFactory.get("myStep1")
+    public Step customStep1() {
+        return stepBuilderFactory.get("customStep1")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("myStep was executed");
+                        System.out.println("customStep1 was executed");
                         return RepeatStatus.FINISHED;
                     }
                 }).build();
     }
 
     @Bean
-    public Step myStep2() {
-        return stepBuilderFactory.get("myStep2")
+    public Step customStep2() {
+        return stepBuilderFactory.get("customStep2")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("myStep was executed");
+                        System.out.println("customStep2 was executed");
                         return RepeatStatus.FINISHED;
                     }
                 }).build();
@@ -93,7 +93,7 @@ public class ParallelStepConfiguration2 {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(8);
-        executor.setThreadNamePrefix("async-thread-");
+        executor.setThreadNamePrefix("parallel-thread-");
         return executor;
     }
 }
