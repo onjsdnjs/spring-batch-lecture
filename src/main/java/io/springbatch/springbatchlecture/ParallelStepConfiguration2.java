@@ -33,7 +33,7 @@ public class ParallelStepConfiguration2 {
                 .add(flow1(), flow2())
                 .end();
 
-        return jobBuilderFactory.get("batchJob")
+        return jobBuilderFactory.get("batchJob2")
                 .start(customStep1())
                 .next(customStep2())
                 .on("COMPLETED").to(flow)
