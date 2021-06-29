@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class PartitioningConfiguration {
+public class SynchronizedConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -38,22 +38,17 @@ public class PartitioningConfiguration {
     }
 
     @Bean
-    public ColumnRangePartitioner partitioner() {
-        ColumnRangePartitioner columnRangePartitioner = new ColumnRangePartitioner();
-
-        columnRangePartitioner.setColumn("id");
-        columnRangePartitioner.setDataSource(this.dataSource);
-        columnRangePartitioner.setTable("customer");
-
-        return columnRangePartitioner;
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
+                .<Customer, Customer>chunk(100)
+                .reader(pagingItemReader())
+                .writer(customerItemWriter())
+                .build();
     }
 
     @Bean
     @StepScope
-    public JdbcPagingItemReader<Customer> pagingItemReader(
-            @Value("#{stepExecutionContext['minValue']}")Long minValue,
-            @Value("#{stepExecutionContext['maxValue']}")Long maxValue) {
-        System.out.println("reading " + minValue + " to " + maxValue);
+    public JdbcPagingItemReader<Customer> pagingItemReader() {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
@@ -63,7 +58,6 @@ public class PartitioningConfiguration {
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
         queryProvider.setSelectClause("id, firstName, lastName, birthdate");
         queryProvider.setFromClause("from customer");
-        queryProvider.setWhereClause("where id >= " + minValue + " and id < " + maxValue);
 
         Map<String, Order> sortKeys = new HashMap<>(1);
 
@@ -87,25 +81,6 @@ public class PartitioningConfiguration {
         itemWriter.afterPropertiesSet();
 
         return itemWriter;
-    }
-
-    @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .partitioner(slaveStep().getName(), partitioner())
-                .step(slaveStep())
-                .gridSize(4)
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .build();
-    }
-
-    @Bean
-    public Step slaveStep() {
-        return stepBuilderFactory.get("slaveStep")
-                .<Customer, Customer>chunk(1000)
-                .reader(pagingItemReader(null, null))
-                .writer(customerItemWriter())
-                .build();
     }
 }
 
