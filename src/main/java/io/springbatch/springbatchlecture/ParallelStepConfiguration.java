@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
@@ -28,60 +31,37 @@ public class ParallelStepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource dataSource;
 
     @Bean
-    public Job job() throws Exception {
+    public Job job() {
         return jobBuilderFactory.get("batchJob")
-                .incrementer(new RunIdIncrementer())
-                .start(step1())
+                .start(flow1())
+                .split(taskExecutor()).add(flow2())
+                .end()
                 .build();
     }
 
     @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(100)
-                .reader(pagingItemReader())
-                .writer(customItemWriter())
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .throttleLimit(2)
+    public Flow flow1() {
+        return new FlowBuilder<Flow>("flow1")
+                .start(stepBuilderFactory.get("step1")
+                        .tasklet(tasklet()).build())
                 .build();
     }
 
     @Bean
-    public JdbcPagingItemReader<Customer> pagingItemReader() {
-        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
-
-        reader.setDataSource(this.dataSource);
-        reader.setFetchSize(300);
-        reader.setRowMapper(new CustomerRowMapper());
-
-        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
-        queryProvider.setFromClause("from customer");
-
-        Map<String, Order> sortKeys = new HashMap<>(1);
-
-        sortKeys.put("id", Order.ASCENDING);
-
-        queryProvider.setSortKeys(sortKeys);
-
-        reader.setQueryProvider(queryProvider);
-
-        return reader;
+    public Flow flow2() {
+        return new FlowBuilder<Flow>("flow2")
+                .start(stepBuilderFactory.get("step2")
+                        .tasklet(tasklet()).build())
+                .next(stepBuilderFactory.get("step3")
+                        .tasklet(tasklet()).build())
+                .build();
     }
 
     @Bean
-    public JdbcBatchItemWriter customItemWriter() {
-        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
-
-        itemWriter.setDataSource(this.dataSource);
-        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
-        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
-        itemWriter.afterPropertiesSet();
-
-        return itemWriter;
+    public Tasklet tasklet() {
+        return new CustomTasklet();
     }
 
     @Bean
