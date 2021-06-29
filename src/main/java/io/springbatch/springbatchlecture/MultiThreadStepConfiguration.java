@@ -32,8 +32,17 @@ public class MultiThreadStepConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
-//                .start(step1())
-                .start(asyncStep1())
+                .start(step1())
+                .build();
+    }
+
+    @Bean
+    public Step step1() throws Exception {
+        return stepBuilderFactory.get("step1")
+                .<Customer, Customer>chunk(100)
+                .reader(pagingItemReader())
+                .writer(customItemWriter())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
@@ -61,33 +70,6 @@ public class MultiThreadStepConfiguration {
     }
 
     @Bean
-    public ItemProcessor customItemProcessor() {
-        return new ItemProcessor<Customer, Customer>() {
-            @Override
-            public Customer process(Customer item) throws Exception {
-
-                Thread.sleep(10);
-
-                return new Customer(item.getId(),
-                        item.getFirstName().toUpperCase(),
-                        item.getLastName().toUpperCase(),
-                        item.getBirthdate());
-            }
-        };
-    }
-
-    @Bean
-    public AsyncItemProcessor asyncItemProcessor() throws Exception {
-        AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor();
-
-        asyncItemProcessor.setDelegate(customItemProcessor());
-        asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        asyncItemProcessor.afterPropertiesSet();
-
-        return asyncItemProcessor;
-    }
-
-    @Bean
     public JdbcBatchItemWriter customItemWriter() {
         JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
 
@@ -97,36 +79,6 @@ public class MultiThreadStepConfiguration {
         itemWriter.afterPropertiesSet();
 
         return itemWriter;
-    }
-
-    @Bean
-    public AsyncItemWriter asyncItemWriter() throws Exception {
-        AsyncItemWriter<Customer> asyncItemWriter = new AsyncItemWriter<>();
-
-        asyncItemWriter.setDelegate(customItemWriter());
-        asyncItemWriter.afterPropertiesSet();
-
-        return asyncItemWriter;
-    }
-
-    @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .chunk(300)
-                .reader(pagingItemReader())
-                .processor(customItemProcessor())
-                .writer(customItemWriter())
-                .build();
-    }
-
-    @Bean
-    public Step asyncStep1() throws Exception {
-        return stepBuilderFactory.get("asyncStep1")
-                .chunk(300)
-                .reader(pagingItemReader())
-                .processor(asyncItemProcessor())
-                .writer(asyncItemWriter())
-                .build();
     }
 }
 
