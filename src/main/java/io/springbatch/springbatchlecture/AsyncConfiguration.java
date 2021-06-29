@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class ThreadConfiguration {
+public class AsyncConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
