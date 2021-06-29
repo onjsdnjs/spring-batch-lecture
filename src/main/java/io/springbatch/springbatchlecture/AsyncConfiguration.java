@@ -4,23 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
-import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -37,7 +32,8 @@ public class AsyncConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
+//                .start(step1())
+                .start(asyncStep1())
                 .build();
     }
 
@@ -46,7 +42,7 @@ public class AsyncConfiguration {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
-        reader.setFetchSize(1000);
+        reader.setFetchSize(300);
         reader.setRowMapper(new CustomerRowMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
@@ -65,7 +61,7 @@ public class AsyncConfiguration {
     }
 
     @Bean
-    public ItemProcessor itemProcessor() {
+    public ItemProcessor customItemProcessor() {
         return new ItemProcessor<Customer, Customer>() {
             @Override
             public Customer process(Customer item) throws Exception {
@@ -84,7 +80,7 @@ public class AsyncConfiguration {
     public AsyncItemProcessor asyncItemProcessor() throws Exception {
         AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor();
 
-        asyncItemProcessor.setDelegate(itemProcessor());
+        asyncItemProcessor.setDelegate(customItemProcessor());
         asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
         asyncItemProcessor.afterPropertiesSet();
 
@@ -92,7 +88,7 @@ public class AsyncConfiguration {
     }
 
     @Bean
-    public JdbcBatchItemWriter customerItemWriter() {
+    public JdbcBatchItemWriter customItemWriter() {
         JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
 
         itemWriter.setDataSource(this.dataSource);
@@ -107,7 +103,7 @@ public class AsyncConfiguration {
     public AsyncItemWriter asyncItemWriter() throws Exception {
         AsyncItemWriter<Customer> asyncItemWriter = new AsyncItemWriter<>();
 
-        asyncItemWriter.setDelegate(customerItemWriter());
+        asyncItemWriter.setDelegate(customItemWriter());
         asyncItemWriter.afterPropertiesSet();
 
         return asyncItemWriter;
@@ -116,7 +112,17 @@ public class AsyncConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .chunk(10)
+                .chunk(300)
+                .reader(pagingItemReader())
+                .processor(customItemProcessor())
+                .writer(customItemWriter())
+                .build();
+    }
+
+    @Bean
+    public Step asyncStep1() throws Exception {
+        return stepBuilderFactory.get("asyncStep1")
+                .chunk(300)
                 .reader(pagingItemReader())
                 .processor(asyncItemProcessor())
                 .writer(asyncItemWriter())
