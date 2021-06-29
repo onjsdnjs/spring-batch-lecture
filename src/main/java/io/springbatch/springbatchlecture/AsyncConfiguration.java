@@ -142,6 +142,7 @@ public class AsyncConfiguration {
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(8);
         executor.setThreadNamePrefix("async-thread-");
+//        executor.initialize();
         return executor;
     }
 }
