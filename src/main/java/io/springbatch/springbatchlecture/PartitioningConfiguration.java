@@ -27,7 +27,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class ParallelStepConfiguration {
+public class PartitioningConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
