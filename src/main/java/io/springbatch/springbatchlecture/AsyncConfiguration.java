@@ -9,16 +9,19 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.sql.DataSource;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
@@ -26,6 +29,7 @@ public class AsyncConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final DataSource dataSource;
 
     @Bean
     public Job job() throws Exception {
@@ -36,37 +40,83 @@ public class AsyncConfiguration {
     }
 
     @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .<String, String>chunk(5)
-                .reader(reader())
-                .processor(new ItemProcessor<String, String>() {
-                    @Override
-                    public String process(String item) throws Exception {
-                        System.out.println("item = " + item);
-                        return item;
-                    }
-                })
-                .writer(new ItemWriter<String>() {
-                    @Override
-                    public void write(List<? extends String> items) throws Exception {
-                        System.out.println("items = " + items);
-                    }
-                })
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .build();
+    public JdbcPagingItemReader<Customer> pagingItemReader() {
+        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+
+        reader.setDataSource(this.dataSource);
+        reader.setFetchSize(1000);
+        reader.setRowMapper(new CustomerRowMapper());
+
+        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+        queryProvider.setFromClause("from customer");
+
+        Map<String, Order> sortKeys = new HashMap<>(1);
+
+        sortKeys.put("id", Order.ASCENDING);
+
+        queryProvider.setSortKeys(sortKeys);
+
+        reader.setQueryProvider(queryProvider);
+
+        return reader;
     }
 
     @Bean
-    public ListItemReader<String> reader() {
+    public ItemProcessor itemProcessor() {
+        return new ItemProcessor<Customer, Customer>() {
+            @Override
+            public Customer process(Customer item) throws Exception {
+                Thread.sleep(new Random().nextInt(10));
+                return new Customer(item.getId(),
+                        item.getFirstName().toUpperCase(),
+                        item.getLastName().toUpperCase(),
+                        item.getBirthdate());
+            }
+        };
+    }
 
-        List<String> items = new ArrayList<>();
+    @Bean
+    public AsyncItemProcessor asyncItemProcessor() throws Exception {
+        AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor();
 
-        for(int i = 0; i < 10; i++) {
-            items.add(String.valueOf(i));
-        }
+        asyncItemProcessor.setDelegate(itemProcessor());
+        asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        asyncItemProcessor.afterPropertiesSet();
 
-        return new ListItemReader<>(items);
+        return asyncItemProcessor;
+    }
+
+    @Bean
+    public JdbcBatchItemWriter customerItemWriter() {
+        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
+
+        itemWriter.setDataSource(this.dataSource);
+        itemWriter.setSql("INSERT INTO NEW_CUSTOMER VALUES (:id, :firstName, :lastName, :birthdate)");
+        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
+        itemWriter.afterPropertiesSet();
+
+        return itemWriter;
+    }
+
+    @Bean
+    public AsyncItemWriter asyncItemWriter() throws Exception {
+        AsyncItemWriter<Customer> asyncItemWriter = new AsyncItemWriter<>();
+
+        asyncItemWriter.setDelegate(customerItemWriter());
+        asyncItemWriter.afterPropertiesSet();
+
+        return asyncItemWriter;
+    }
+
+    @Bean
+    public Step step1() throws Exception {
+        return stepBuilderFactory.get("step1")
+                .chunk(1000)
+                .reader(pagingItemReader())
+                .processor(asyncItemProcessor())
+                .writer(asyncItemWriter())
+                .build();
     }
 }
 
