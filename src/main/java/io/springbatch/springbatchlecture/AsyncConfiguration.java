@@ -7,6 +7,8 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
+import org.springframework.batch.integration.async.AsyncItemProcessor;
+import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
@@ -67,7 +69,9 @@ public class AsyncConfiguration {
         return new ItemProcessor<Customer, Customer>() {
             @Override
             public Customer process(Customer item) throws Exception {
-                Thread.sleep(new Random().nextInt(10));
+
+                Thread.sleep(10);
+
                 return new Customer(item.getId(),
                         item.getFirstName().toUpperCase(),
                         item.getLastName().toUpperCase(),
@@ -92,7 +96,7 @@ public class AsyncConfiguration {
         JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
 
         itemWriter.setDataSource(this.dataSource);
-        itemWriter.setSql("INSERT INTO NEW_CUSTOMER VALUES (:id, :firstName, :lastName, :birthdate)");
+        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
         itemWriter.afterPropertiesSet();
 
@@ -112,7 +116,7 @@ public class AsyncConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .chunk(1000)
+                .chunk(10)
                 .reader(pagingItemReader())
                 .processor(asyncItemProcessor())
                 .writer(asyncItemWriter())
