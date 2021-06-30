@@ -28,7 +28,7 @@ public class ChunkListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource dataSource;
+    private final CustomChunkListener customChunkListener;
 
     @Bean
     public Job job() throws Exception {
@@ -42,17 +42,17 @@ public class ChunkListenerConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(100)
-                .listener(new CustomChunkListener())
-                .reader(new ItemReader<Customer>() {
+                .<String, String>chunk(100)
+                .listener(customChunkListener)
+                .reader(new ItemReader<String>() {
                     @Override
-                    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
                         return null;
                     }
                 })
-                .writer(new ItemWriter<Customer>() {
+                .writer(new ItemWriter<String>() {
                     @Override
-                    public void write(List<? extends Customer> items) throws Exception {
+                    public void write(List<? extends String> items) throws Exception {
 
                     }
                 })
@@ -62,17 +62,17 @@ public class ChunkListenerConfiguration {
     @Bean
     public Step step2() throws Exception {
         return stepBuilderFactory.get("step2")
-                .<Customer, Customer>chunk(100)
-                .listener(new CustomChunkListener())
-                .reader(new ItemReader<Customer>() {
+                .<String, String>chunk(100)
+                .listener(customChunkListener)
+                .reader(new ItemReader<String>() {
                     @Override
-                    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
                         return null;
                     }
                 })
-                .writer(new ItemWriter<Customer>() {
+                .writer(new ItemWriter<String>() {
                     @Override
-                    public void write(List<? extends Customer> items) throws Exception {
+                    public void write(List<? extends String> items) throws Exception {
 
                     }
                 })
