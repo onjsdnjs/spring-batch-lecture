@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 @Configuration
 @Slf4j
-public class ListenerConfiguration {
+public class JobAndStepListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
