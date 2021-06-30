@@ -1,28 +1,33 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ItemReadListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.JdbcPagingItemReader;
-import org.springframework.batch.item.database.Order;
-import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.support.SynchronizedItemStreamReader;
+import org.springframework.batch.item.support.builder.SynchronizedItemStreamReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
+@Slf4j
 public class SynchronizedConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -40,34 +45,52 @@ public class SynchronizedConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(100)
-                .reader(pagingItemReader())
+                .<Customer, Customer>chunk(60)
+                .reader(customItemReader())
+                .listener(new ItemReadListener<Customer>() {
+                    @Override
+                    public void beforeRead() {
+
+                    }
+
+                    @Override
+                    public void afterRead(Customer item) {
+                        System.out.println("item.getId() : " + item.getId());
+                    }
+
+                    @Override
+                    public void onReadError(Exception ex) {
+
+                    }
+                })
+                .processor(new ItemProcessor<Customer, Customer>() {
+                    @Override
+                    public Customer process(Customer item) throws Exception {
+                        log.info("Processing Start Item id={}", item.getId());
+                        Thread.sleep(100);
+                        log.info("Processing End Item id={}", item.getId());
+                        return item;
+                    }
+                })
                 .writer(customerItemWriter())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
     @Bean
     @StepScope
-    public JdbcPagingItemReader<Customer> pagingItemReader() {
-        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+    public SynchronizedItemStreamReader<Customer> customItemReader() {
+        JdbcCursorItemReader<Customer> notSafetyReader = new JdbcCursorItemReaderBuilder<Customer>()
+                .fetchSize(60)
+                .dataSource(dataSource)
+                .rowMapper(new BeanPropertyRowMapper<>(Customer.class))
+                .sql("select id, firstName, lastName, birthdate from customer")
+                .name("SafetyReader")
+                .build();
 
-        reader.setDataSource(this.dataSource);
-        reader.setFetchSize(1000);
-        reader.setRowMapper(new CustomerRowMapper());
-
-        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
-        queryProvider.setFromClause("from customer");
-
-        Map<String, Order> sortKeys = new HashMap<>(1);
-
-        sortKeys.put("id", Order.ASCENDING);
-
-        queryProvider.setSortKeys(sortKeys);
-
-        reader.setQueryProvider(queryProvider);
-
-        return reader;
+        return new SynchronizedItemStreamReaderBuilder<Customer>()
+                .delegate(notSafetyReader)
+                .build();
     }
 
     @Bean
@@ -82,5 +105,15 @@ public class SynchronizedConfiguration {
 
         return itemWriter;
     }
+
+    @Bean
+    public TaskExecutor taskExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(8);
+        executor.setThreadNamePrefix("safety-thread-");
+        return executor;
+    }
 }
 
+*/
