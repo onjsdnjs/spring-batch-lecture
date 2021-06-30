@@ -7,7 +7,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
@@ -35,6 +35,7 @@ public class ChunkListenerConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
+                .next(step2())
                 .build();
     }
 
@@ -42,55 +43,40 @@ public class ChunkListenerConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<Customer, Customer>chunk(100)
-                .reader(pagingItemReader())
-                .writer(customItemWriter())
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .throttleLimit(2)
+                .listener(new CustomChunkListener())
+                .reader(new ItemReader<Customer>() {
+                    @Override
+                    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                        return null;
+                    }
+                })
+                .writer(new ItemWriter<Customer>() {
+                    @Override
+                    public void write(List<? extends Customer> items) throws Exception {
+
+                    }
+                })
                 .build();
     }
 
     @Bean
-    public JdbcPagingItemReader<Customer> pagingItemReader() {
-        JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+    public Step step2() throws Exception {
+        return stepBuilderFactory.get("step2")
+                .<Customer, Customer>chunk(100)
+                .listener(new CustomChunkListener())
+                .reader(new ItemReader<Customer>() {
+                    @Override
+                    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+                        return null;
+                    }
+                })
+                .writer(new ItemWriter<Customer>() {
+                    @Override
+                    public void write(List<? extends Customer> items) throws Exception {
 
-        reader.setDataSource(this.dataSource);
-        reader.setFetchSize(300);
-        reader.setRowMapper(new CustomerRowMapper());
-
-        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
-        queryProvider.setFromClause("from customer");
-
-        Map<String, Order> sortKeys = new HashMap<>(1);
-
-        sortKeys.put("id", Order.ASCENDING);
-
-        queryProvider.setSortKeys(sortKeys);
-
-        reader.setQueryProvider(queryProvider);
-
-        return reader;
-    }
-
-    @Bean
-    public JdbcBatchItemWriter customItemWriter() {
-        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
-
-        itemWriter.setDataSource(this.dataSource);
-        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
-        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
-        itemWriter.afterPropertiesSet();
-
-        return itemWriter;
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor(){
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setThreadNamePrefix("async-thread-");
-        return executor;
+                    }
+                })
+                .build();
     }
 }
 
