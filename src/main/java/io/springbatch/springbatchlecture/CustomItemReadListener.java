@@ -11,7 +11,7 @@ public class CustomItemReadListener implements ItemReadListener {
 
 	@Override
 	public void beforeRead() {
-		System.out.println(">> beforeRead");
+		System.out.println(">> beforeRead"); // item 이 없을 때까지 반복하므로 최종 한번 더 호출된다
 	}
 
 	@Override

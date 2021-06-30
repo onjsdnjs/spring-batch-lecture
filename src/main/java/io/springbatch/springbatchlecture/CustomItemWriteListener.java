@@ -10,17 +10,17 @@ public class CustomItemWriteListener implements ItemWriteListener {
 
 	@Override
 	public void beforeWrite(List items) {
-		System.out.println(">> beforeRead");
+		System.out.println(">> beforeWrite");
 	}
 
 	@Override
 	public void afterWrite(List items) {
-		System.out.println(">> afterRead : "+ items);
+		System.out.println(">> afterWrite : "+ items);
 	}
 
 	@Override
 	public void onWriteError(Exception exception, List items) {
-		System.out.println(">> onReadError : " + exception.getMessage());
-		System.out.println(">> onReadError : " + items);
+		System.out.println(">> onWriteError : " + exception.getMessage());
+		System.out.println(">> onWriteError : " + items);
 	}
 }
