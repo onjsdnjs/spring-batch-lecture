@@ -10,9 +10,12 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.*;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
+import org.springframework.batch.item.support.SynchronizedItemStreamReader;
+import org.springframework.batch.item.support.builder.SynchronizedItemStreamReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -20,13 +23,11 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
 @Slf4j
-public class NotSynchronizedConfiguration {
+public class ListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -77,13 +78,17 @@ public class NotSynchronizedConfiguration {
 
     @Bean
     @StepScope
-    public JdbcCursorItemReader<Customer> customItemReader() {
-        return new JdbcCursorItemReaderBuilder<Customer>()
+    public SynchronizedItemStreamReader<Customer> customItemReader() {
+        JdbcCursorItemReader<Customer> notSafetyReader = new JdbcCursorItemReaderBuilder<Customer>()
                 .fetchSize(60)
                 .dataSource(dataSource)
                 .rowMapper(new BeanPropertyRowMapper<>(Customer.class))
                 .sql("select id, firstName, lastName, birthdate from customer")
-                .name("NotSafetyReader")
+                .name("SafetyReader")
+                .build();
+
+        return new SynchronizedItemStreamReaderBuilder<Customer>()
+                .delegate(notSafetyReader)
                 .build();
     }
 
@@ -105,7 +110,7 @@ public class NotSynchronizedConfiguration {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(8);
-        executor.setThreadNamePrefix("not-safety-thread-");
+        executor.setThreadNamePrefix("safety-thread-");
         return executor;
     }
 }
