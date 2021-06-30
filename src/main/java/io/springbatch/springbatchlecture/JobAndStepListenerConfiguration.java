@@ -35,13 +35,14 @@ public class JobAndStepListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource dataSource;
+    private final CustomStepListener customStepListener;
 
     @Bean
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
+                .next(step2())
                 .listener(new CustomJobListener())
                 .build();
     }
@@ -55,7 +56,20 @@ public class JobAndStepListenerConfiguration {
                         return RepeatStatus.FINISHED;
                     }
                 })
-                .listener(new CustomStepListener())
+                .listener(customStepListener)
+                .build();
+    }
+
+    @Bean
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
+                .tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+                        return RepeatStatus.FINISHED;
+                    }
+                })
+                .listener(customStepListener)
                 .build();
     }
 }
