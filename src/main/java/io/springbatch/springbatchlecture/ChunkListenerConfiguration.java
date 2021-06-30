@@ -5,7 +5,11 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.*;
+import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,43 +35,27 @@ public class ChunkListenerConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<String, String>chunk(100)
                 .listener(customChunkListener)
-                .reader(new ItemReader<String>() {
-                    @Override
-                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-                        return null;
-                    }
-                })
-                .writer(new ItemWriter<String>() {
-                    @Override
-                    public void write(List<? extends String> items) throws Exception {
-
-                    }
-                })
+                .tasklet((contribution, chunkContext) -> null)
                 .build();
     }
 
     @Bean
     public Step step2() throws Exception {
         return stepBuilderFactory.get("step2")
-                .<String, String>chunk(100)
+                .<Integer, String>chunk(100)
                 .listener(new CustomItemReadListener())
                 .listener(new CustomItemProcessListener())
                 .listener(new CustomItemWriteListener())
-                .reader(new ItemReader<String>() {
-                    @Override
-                    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-                        return null;
-                    }
-                })
-                .writer(new ItemWriter<String>() {
-                    @Override
-                    public void write(List<? extends String> items) throws Exception {
-
-                    }
-                })
+                .reader(listItemReader())
+                .writer((ItemWriter<String>) items -> System.out.println(items))
                 .build();
+    }
+
+    @Bean
+    public ItemReader<Integer> listItemReader() {
+        List<Integer> list = Arrays.asList(1,2,3,4,5,6);
+        return new ListItemReader<>(list);
     }
 }
 
