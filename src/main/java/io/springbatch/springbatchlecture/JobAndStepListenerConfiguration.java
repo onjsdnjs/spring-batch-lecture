@@ -71,47 +71,7 @@ public class JobAndStepListenerConfiguration {
                         return item;
                     }
                 })
-                .writer(customerItemWriter())
-                .taskExecutor(taskExecutor())
                 .build();
-    }
-
-    @Bean
-    @StepScope
-    public SynchronizedItemStreamReader<Customer> customItemReader() {
-        JdbcCursorItemReader<Customer> notSafetyReader = new JdbcCursorItemReaderBuilder<Customer>()
-                .fetchSize(60)
-                .dataSource(dataSource)
-                .rowMapper(new BeanPropertyRowMapper<>(Customer.class))
-                .sql("select id, firstName, lastName, birthdate from customer")
-                .name("SafetyReader")
-                .build();
-
-        return new SynchronizedItemStreamReaderBuilder<Customer>()
-                .delegate(notSafetyReader)
-                .build();
-    }
-
-    @Bean
-    @StepScope
-    public JdbcBatchItemWriter<Customer> customerItemWriter() {
-        JdbcBatchItemWriter<Customer> itemWriter = new JdbcBatchItemWriter<>();
-
-        itemWriter.setDataSource(this.dataSource);
-        itemWriter.setSql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)");
-        itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider());
-        itemWriter.afterPropertiesSet();
-
-        return itemWriter;
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor(){
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setThreadNamePrefix("safety-thread-");
-        return executor;
     }
 }
 
