@@ -24,7 +24,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class MultiThreadStepConfiguration {
+public class ChunkListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
