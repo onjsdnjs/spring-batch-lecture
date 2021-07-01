@@ -6,7 +6,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,7 +22,7 @@ public class RetryListenerConfiguration {
     private final CustomRetryListener customRetryListener;
 
     @Bean
-    public Job job() throws Exception {
+    public Job job(){
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
@@ -30,41 +30,26 @@ public class RetryListenerConfiguration {
     }
 
     @Bean
-    public Step step1() throws Exception {
+    public Step step1(){
         return stepBuilderFactory.get("step1")
-                .<Integer, String>chunk(10)
+                .<Customer, Customer>chunk(10)
                 .reader(listItemReader())
-                .processor(new ItemProcessor<Integer, String>() {
-                    @Override
-                    public String process(Integer item) throws Exception {
-                        if (item == 4) {
-//                            throw new CustomSkipException("process skipped");
-                        }
-                        System.out.println("process : " + item);
-                        return "item" + item;
-                    }
-                })
-                .writer(new ItemWriter<String>() {
-                    @Override
-                    public void write(List<? extends String> items) throws Exception {
-                        for (String item : items) {
-                            if (item.equals("item5")) {
-                                throw new CustomRetryException("write skipped");
-                            }
-                            System.out.println("write : " + item);
-                        }
+                .processor(new CustomItemProcessor())
+                .writer(items -> {
+                    for (Customer item : items) {
+                        System.out.println("write : " + item);
                     }
                 })
                 .faultTolerant()
-                .skip(CustomRetryException.class)
-                .skipLimit(3)
+                .retry(CustomRetryException.class)
+                .retryLimit(3)
                 .listener(customRetryListener)
                 .build();
     }
 
     @Bean
-    public ItemReader<Integer> listItemReader() {
-        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+    public ItemReader<Customer> listItemReader() {
+        List<Customer> list = Arrays.asList(new Customer(),new Customer(),new Customer());
         return new LinkedListItemReader<>(list);
     }
 }
