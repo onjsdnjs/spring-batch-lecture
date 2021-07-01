@@ -11,13 +11,13 @@ public class CustomSkipListener implements SkipListener {
 
 	@Override
 	public void onSkipInRead(Throwable t) {
-		System.out.println(">> onSkipInRead : "+ t.getMessage());
+//		System.out.println(">> onSkipInRead : "+ t.getMessage());
 	}
 
 	@Override
 	public void onSkipInWrite(Object item, Throwable t) {
 		System.out.println(">> onSkipInWrite : "+ item);
-		System.out.println(">> onSkipInWrite : "+ t.getMessage());
+//		System.out.println(">> onSkipInWrite : "+ t.getMessage());
 	}
 
 	@Override
