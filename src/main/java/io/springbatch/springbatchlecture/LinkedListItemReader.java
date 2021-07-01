@@ -2,7 +2,6 @@ package io.springbatch.springbatchlecture;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.lang.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +19,6 @@ public class LinkedListItemReader<T> implements ItemReader<T> {
         }
     }
 
-    @Nullable
     @Override
     public T read() throws CustomRetryException {
 
