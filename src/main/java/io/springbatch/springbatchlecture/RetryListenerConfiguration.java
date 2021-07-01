@@ -7,7 +7,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.*;
-import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +19,7 @@ public class RetryListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final CustomSkipListener customSkipListener;
+    private final CustomRetryListener customRetryListener;
 
     @Bean
     public Job job() throws Exception {
@@ -59,7 +58,7 @@ public class RetryListenerConfiguration {
                 .faultTolerant()
                 .skip(CustomSkipException.class)
                 .skipLimit(3)
-                .listener(customSkipListener)
+                .listener(customRetryListener)
                 .build();
     }
 
