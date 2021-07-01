@@ -29,6 +29,10 @@
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-integration</artifactId>
         </dependency>
+       <!-- <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
