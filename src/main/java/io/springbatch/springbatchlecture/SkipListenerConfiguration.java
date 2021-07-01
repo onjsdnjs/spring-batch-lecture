@@ -18,7 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class RepeatListenerConfiguration {
+public class SkipListenerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
