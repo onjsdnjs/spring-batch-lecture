@@ -49,14 +49,14 @@ public class RetryListenerConfiguration {
                     public void write(List<? extends String> items) throws Exception {
                         for (String item : items) {
                             if (item.equals("item5")) {
-                                throw new CustomSkipException("write skipped");
+                                throw new CustomRetryException("write skipped");
                             }
                             System.out.println("write : " + item);
                         }
                     }
                 })
                 .faultTolerant()
-                .skip(CustomSkipException.class)
+                .skip(CustomRetryException.class)
                 .skipLimit(3)
                 .listener(customRetryListener)
                 .build();

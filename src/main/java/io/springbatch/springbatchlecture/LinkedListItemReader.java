@@ -22,7 +22,7 @@ public class LinkedListItemReader<T> implements ItemReader<T> {
 
     @Nullable
     @Override
-    public T read() throws CustomSkipException {
+    public T read() throws CustomRetryException {
 
         if (!list.isEmpty()) {
             T remove = (T)list.remove(0);
