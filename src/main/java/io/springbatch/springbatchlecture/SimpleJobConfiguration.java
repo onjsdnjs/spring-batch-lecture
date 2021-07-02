@@ -15,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class BatchTestConfiguration {
+public class SimpleJobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
