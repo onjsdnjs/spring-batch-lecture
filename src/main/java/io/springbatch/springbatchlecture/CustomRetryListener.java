@@ -11,6 +11,7 @@ public class CustomRetryListener implements RetryListener{
 	@Override
 	public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
 		System.out.println("open");
+
 		return true;
 	}
 
