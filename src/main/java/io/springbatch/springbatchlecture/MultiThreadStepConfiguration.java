@@ -44,7 +44,7 @@ public class MultiThreadStepConfiguration {
                 .<Customer, Customer>chunk(100)
                 .reader(pagingItemReader())
                 .writer(customItemWriter())
-                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .taskExecutor(taskExecutor())
                 .throttleLimit(2)
                 .build();
     }
