@@ -15,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class RetryListenerConfiguration {
+public class BatchTestConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;

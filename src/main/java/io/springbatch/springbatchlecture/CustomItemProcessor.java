@@ -16,7 +16,7 @@ public class CustomItemProcessor implements ItemProcessor<Integer,String> {
 
             } else if (count % 2 == 1) {
                 count = count + 1;
-                throw new CustomRetryException();
+//                throw new CustomRetryException();
             }
         }
         return String.valueOf(item);

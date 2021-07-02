@@ -14,7 +14,7 @@ public class CustomItemWriter implements ItemWriter<String> {
 
                 } else if (count % 2 == 1) {
                     count = count + 1;
-                    throw new CustomRetryException();
+//                    throw new CustomRetryException();
                 }
             }
             System.out.println("write : " + item);
