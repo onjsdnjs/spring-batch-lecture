@@ -39,7 +39,7 @@ public class SkipListenerConfiguration {
                     @Override
                     public String process(Integer item) throws Exception {
                         if (item == 4) {
-//                            throw new CustomSkipException("process skipped");
+                            throw new CustomSkipException("process skipped");
                         }
                         System.out.println("process : " + item);
                         return "item" + item;
@@ -50,7 +50,7 @@ public class SkipListenerConfiguration {
                     public void write(List<? extends String> items) throws Exception {
                         for (String item : items) {
                             if (item.equals("item5")) {
-                                throw new CustomSkipException("write skipped");
+//                                throw new CustomSkipException("write skipped");
                             }
                             System.out.println("write : " + item);
                         }
