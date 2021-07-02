@@ -1,7 +1,6 @@
 package io.springbatch.springbatchlecture;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
@@ -21,7 +20,7 @@ import java.util.Date;
 @SpringBatchTest
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes={SimpleJobConfiguration.class, TestBatchConfig.class})
-public class SimpleJobTest {
+public class SimpleStepTest {
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;

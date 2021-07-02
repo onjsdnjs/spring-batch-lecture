@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: mysql
   batch:
     job:
 #      enabled: false

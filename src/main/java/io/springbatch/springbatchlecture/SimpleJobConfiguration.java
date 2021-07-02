@@ -46,7 +46,6 @@ public class SimpleJobConfiguration {
                 .<Customer, Customer>chunk(100)
                 .reader(customItemReader())
                 .writer(customItemWriter())
-                .throttleLimit(2)
                 .build();
     }
 
