@@ -32,11 +32,11 @@ public class RetryListenerConfiguration {
     @Bean
     public Step step1(){
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(10)
+                .<Integer, String>chunk(10)
                 .reader(listItemReader())
                 .processor(new CustomItemProcessor())
                 .writer(items -> {
-                    for (Customer item : items) {
+                    for (String item : items) {
                         System.out.println("write : " + item);
                     }
                 })
@@ -48,8 +48,8 @@ public class RetryListenerConfiguration {
     }
 
     @Bean
-    public ItemReader<Customer> listItemReader() {
-        List<Customer> list = Arrays.asList(new Customer(),new Customer(),new Customer());
+    public ItemReader<Integer> listItemReader() {
+        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
         return new LinkedListItemReader<>(list);
     }
 }

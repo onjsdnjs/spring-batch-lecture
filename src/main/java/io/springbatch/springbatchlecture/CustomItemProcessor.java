@@ -3,22 +3,22 @@ package io.springbatch.springbatchlecture;
 
 import org.springframework.batch.item.ItemProcessor;
 
-public class CustomItemProcessor implements ItemProcessor<Customer,Customer> {
+public class CustomItemProcessor implements ItemProcessor<Integer,String> {
 
     int count = 0;
 
     @Override
-    public Customer process(Customer customer) throws Exception {
-        Customer customer1 = null;
+    public String process(Integer item) throws Exception {
 
+        int item1 = 0;
         if (count % 2 == 0) {
-            customer1 = customer;
+            item1 = item;
             count = count + 1;
 
         } else if (count %2 == 1) {
             count = count + 1;
             throw new CustomRetryException();
         }
-        return customer1;
+        return String.valueOf(item1);
     }
 }
