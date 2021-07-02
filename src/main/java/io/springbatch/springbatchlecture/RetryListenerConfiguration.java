@@ -35,11 +35,7 @@ public class RetryListenerConfiguration {
                 .<Integer, String>chunk(10)
                 .reader(listItemReader())
                 .processor(new CustomItemProcessor())
-                .writer(items -> {
-                    for (String item : items) {
-                        System.out.println("write : " + item);
-                    }
-                })
+                .writer(new CustomItemWriter())
                 .faultTolerant()
                 .retry(CustomRetryException.class)
                 .retryLimit(3)
@@ -49,7 +45,8 @@ public class RetryListenerConfiguration {
 
     @Bean
     public ItemReader<Integer> listItemReader() {
-        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        List<Integer> list = Arrays.asList(1,2,3,4);
+//        List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
         return new LinkedListItemReader<>(list);
     }
 }
