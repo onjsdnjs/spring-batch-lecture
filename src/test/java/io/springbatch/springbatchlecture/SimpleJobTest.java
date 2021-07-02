@@ -38,7 +38,8 @@ public class SimpleJobTest {
                 .toJobParameters();
 
         // when
-        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
+//        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("step1");
 
         // then
         Assert.assertEquals(jobExecution.getStatus(), BatchStatus.COMPLETED);
