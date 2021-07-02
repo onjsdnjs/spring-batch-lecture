@@ -10,12 +10,12 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBatchTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = SimpleJobConfiguration.class)
+@SpringBootTest(classes={SimpleJobConfiguration.class, TestBatchConfig.class})
 public class SimpleJobTest {
 
     @Autowired
@@ -26,9 +26,7 @@ public class SimpleJobTest {
 
         // given
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("shardNumber", "2")
-                .addString("version", "RB_0.0.4")
-                .addString("exeDateTime", "202007241682")
+                .addString("requestDate", "20020101")
                 .toJobParameters();
 
         // when

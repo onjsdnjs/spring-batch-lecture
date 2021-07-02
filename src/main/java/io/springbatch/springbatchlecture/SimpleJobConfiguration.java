@@ -44,14 +44,14 @@ public class SimpleJobConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<Customer, Customer>chunk(100)
-                .reader(pagingItemReader())
+                .reader(customItemReader())
                 .writer(customItemWriter())
                 .throttleLimit(2)
                 .build();
     }
 
     @Bean
-    public JdbcPagingItemReader<Customer> pagingItemReader() {
+    public JdbcPagingItemReader<Customer> customItemReader() {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
