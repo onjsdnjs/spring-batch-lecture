@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import org.junit.Assert;
@@ -46,4 +47,4 @@ public class SimpleStepTest {
         // then
         Assert.assertEquals(jobExecution.getStatus(), BatchStatus.COMPLETED);
     }
-}
+}*/

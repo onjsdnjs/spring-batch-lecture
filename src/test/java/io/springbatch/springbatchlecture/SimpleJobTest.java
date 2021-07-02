@@ -1,5 +1,6 @@
 package io.springbatch.springbatchlecture;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +28,10 @@ public class SimpleJobTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
-    private DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     public void simple_job_테스트() throws Exception {
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.execute("delete from customer2");
 
         // given
         JobParameters jobParameters = new JobParametersBuilder()
@@ -46,5 +44,10 @@ public class SimpleJobTest {
 
         // then
         Assert.assertEquals(jobExecution.getStatus(), BatchStatus.COMPLETED);
+    }
+
+    @After
+    public void clear() throws Exception {
+        jdbcTemplate.execute("delete from customer2");
     }
 }
