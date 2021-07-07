@@ -10,6 +10,7 @@ import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
@@ -33,6 +34,7 @@ public class ChunkConfiguration {
     @Bean
     public Job job() {
         return jobBuilderFactory.get("batchJob")
+                .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
                 .build();
@@ -42,18 +44,21 @@ public class ChunkConfiguration {
     @JobScope
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<String, String>chunk(3)
+                .<String, String>chunk(2)
                 .reader(new ListItemReader<>(Arrays.asList("item1", "item2", "item3","item4", "item5", "item6")))
                 .processor(new ItemProcessor<String, String>() {
                     @Override
                     public String process(String item) throws Exception {
+                        Thread.sleep(300);
+                        System.out.println(item);
                         return "my_" + item;
                     }
                 })
                 .writer(new ItemWriter<String>() {
                     @Override
                     public void write(List<? extends String> items) throws Exception {
-                        items.forEach(item -> System.out.println(item));
+                        Thread.sleep(1000);
+                        System.out.println(items);
                     }
                 })
                 .build();
