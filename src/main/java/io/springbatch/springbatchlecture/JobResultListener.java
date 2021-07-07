@@ -40,6 +40,7 @@ public class JobResultListener implements JobExecutionListener {
             System.out.println("stepExecution.getEndTime() : " + stepExecution.getEndTime());
             System.out.println("stepExecution.getWriteCount() : " + stepExecution.getWriteCount());
             System.out.println("stepExecution.getWriteSkipCount() : " + stepExecution.getWriteSkipCount());
+            System.out.println("stepExecution.getFilterCount() : " + stepExecution.getFilterCount());
             System.out.println("stepExecution.getProcessSkipCount() : " + stepExecution.getProcessSkipCount());
             System.out.println("stepExecution.getSkipCount() : " + stepExecution.getSkipCount());
             System.out.println("stepExecution.getExecutionContext() : " + stepExecution.getExecutionContext());
