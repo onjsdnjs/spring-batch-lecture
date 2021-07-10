@@ -20,6 +20,9 @@ spring:
 
 ---
 spring:
+  batch:
+    jdbc:
+      initialize-schema: always
   config:
     activate:
       on-profile: mysql
@@ -29,6 +32,3 @@ spring:
       username: root
       password: pass
       driver-class-name: com.mysql.jdbc.Driver
-  batch:
-    jdbc:
-      initialize-schema: always
