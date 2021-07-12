@@ -17,7 +17,6 @@ spring:
     jdbc:
       initialize-schema: embedded
 
-
 ---
 spring:
   config:
