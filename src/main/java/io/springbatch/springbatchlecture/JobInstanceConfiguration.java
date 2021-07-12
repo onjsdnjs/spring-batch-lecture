@@ -2,10 +2,12 @@ package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -24,7 +26,6 @@ public class JobInstanceConfiguration {
         return this.jobBuilderFactory.get("Job")
                 .start(step1())
                 .next(step2())
-                .next(step3())
                 .build();
     }
 
@@ -34,7 +35,11 @@ public class JobInstanceConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("step1 has executed");
+                        JobInstance jobInstance = contribution.getStepExecution().getJobExecution().getJobInstance();
+                        System.out.println("jobInstance.getId() : " + jobInstance.getId());
+                        System.out.println("jobInstance.getInstanceId() : " + jobInstance.getInstanceId());
+                        System.out.println("jobInstance.getJobName() : " + jobInstance.getJobName());
+                        System.out.println("jobInstance.getJobVersion : " + jobInstance.getVersion());
                         return RepeatStatus.FINISHED;
                     }
                 })
@@ -45,15 +50,6 @@ public class JobInstanceConfiguration {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println("step2 has executed");
-                    return RepeatStatus.FINISHED;
-                })
-                .build();
-    }
-    @Bean
-    public Step step3() {
-        return stepBuilderFactory.get("step3")
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println("step3 has executed");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
