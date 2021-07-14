@@ -2,6 +2,7 @@ package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -33,6 +34,10 @@ public class JobExecutionConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
+                        JobExecution jobExecution = contribution.getStepExecution().getJobExecution();
+                        System.out.println("jobExecution = " + jobExecution);
+
                         System.out.println("step1 has executed");
                         return RepeatStatus.FINISHED;
                     }
@@ -43,9 +48,9 @@ public class JobExecutionConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
-                    throw new RuntimeException("JobExecution has failed");
-//                    System.out.println("step2 has executed");
-//                    return RepeatStatus.FINISHED;
+//                    throw new RuntimeException("JobExecution has failed");
+                    System.out.println("step2 has executed");
+                    return RepeatStatus.FINISHED;
                 })
                 .build();
     }
