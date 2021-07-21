@@ -42,18 +42,20 @@ public class JobLaunchingController {
 	private BasicBatchConfigurer basicBatchConfigurer;
 
 	@PostMapping(value = "/batch")
-	public void launch(@RequestBody Member member) throws Exception {
+	public String launch(@RequestBody Member member) throws Exception {
 
 		JobParameters jobParameters = new JobParametersBuilder()
 						.addString("id", member.getId())
 						.addDate("date", new Date())
 						.toJobParameters();
 
-		//SimpleJobLauncher jobLauncher = (SimpleJobLauncher)simpleLauncher;
+//		SimpleJobLauncher jobLauncher = (SimpleJobLauncher)simpleLauncher;
 		SimpleJobLauncher jobLauncher = (SimpleJobLauncher)basicBatchConfigurer.getJobLauncher();
 		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 		jobLauncher.run(job, jobParameters);
 
 		System.out.println("Job is completed");
+
+		return "batch completed";
 	}
 }
