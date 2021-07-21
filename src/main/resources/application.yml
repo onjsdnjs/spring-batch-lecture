@@ -6,6 +6,7 @@ spring:
 #      enabled: false
       names: ${job.name:NONE}
 
+
 ---
 spring:
   config:
