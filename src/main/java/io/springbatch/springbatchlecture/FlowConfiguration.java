@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -51,3 +52,4 @@ public class FlowConfiguration {
         return flowBuilder.build();
     }
 }
+*/

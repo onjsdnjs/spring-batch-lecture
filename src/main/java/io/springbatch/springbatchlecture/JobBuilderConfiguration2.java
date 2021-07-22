@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -42,3 +43,4 @@ public class JobBuilderConfiguration2 {
                 .build();
     }
 }
+*/
