@@ -1,10 +1,7 @@
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.flow.Flow;
@@ -24,6 +21,13 @@ public class SimpleJobConfiguration {
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
+                .validator(new JobParametersValidator() {
+                    @Override
+                    public void validate(JobParameters parameters) throws JobParametersInvalidException {
+
+                    }
+                })
+                .preventRestart()
                 .start(step1())
                 .next(step2())
                 .next(step3())
