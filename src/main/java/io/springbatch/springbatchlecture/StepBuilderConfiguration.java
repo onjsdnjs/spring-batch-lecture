@@ -8,6 +8,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.*;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -26,9 +27,12 @@ public class StepBuilderConfiguration {
     @Bean
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
+                .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
-                .next(step3())
+                .next(step4())
+                .next(step5())
+//                .next(step3())
                 .build();
     }
 
@@ -49,13 +53,14 @@ public class StepBuilderConfiguration {
                 .writer(list -> {})
                 .build();
     }
-    @Bean
+   /* @Bean
     public Step step3() {
         return stepBuilderFactory.get("step3")
                 .partitioner(step1())
+                .gridSize(2)
                 .build();
     }
-
+*/
     @Bean
     public Step step4() {
         return stepBuilderFactory.get("step4")
@@ -74,7 +79,7 @@ public class StepBuilderConfiguration {
         return this.jobBuilderFactory.get("job")
                 .start(step1())
                 .next(step2())
-                .next(step3())
+//                .next(step3())
                 .build();
     }
     @Bean
