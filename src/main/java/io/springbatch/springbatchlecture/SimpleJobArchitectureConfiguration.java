@@ -23,6 +23,7 @@ public class SimpleJobArchitectureConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
+                .listener(new CustomJobListener())
                 .build();
     }
 
