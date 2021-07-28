@@ -48,6 +48,12 @@ public class TaskletStepConfiguration {
         return stepBuilderFactory.get("chunkStep")
                 .<String, String>chunk(3)
                 .reader(new ListItemReader(Arrays.asList("item1","item2","item3")))
+                .processor(new ItemProcessor<String, String>() {
+                    @Override
+                    public String process(String item) throws Exception {
+                        return item.toUpperCase();
+                    }
+                })
                 .writer(list -> {
                     list.forEach(item -> System.out.println(item));
                 })
