@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Configuration
-public class Limit_AllowConfiguration {
+public class TaskletStepArchitectureConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
