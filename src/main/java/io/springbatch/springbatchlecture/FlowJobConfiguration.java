@@ -36,7 +36,8 @@ public class FlowJobConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .start(step1())
                 .on("COMPLETED").to(step2())
-                .next(step3())
+                .from(step1())
+                .on("FAILED").to(step3())
                 .end()
                 .build();
     }
@@ -48,6 +49,7 @@ public class FlowJobConfiguration {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
                         System.out.println("step1 has executed");
+//                        throw new RuntimeException("");
                         return RepeatStatus.FINISHED;
                     }
                 }).build();
