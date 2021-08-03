@@ -1,4 +1,3 @@
-/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -24,12 +23,10 @@ public class CustomExitStatusConfiguration {
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
                 .start(step1())
-                .on("FAILED")
-                .to(step2())
-                .on("DO PASS")
-                .stop()
-                .from(step2()).on("*")
-                .to(step3())
+                    .on("FAILED")
+                    .to(step2())
+                    .on("PASS")
+                    .stop()
                 .end()
                 .build();
     }
@@ -51,27 +48,21 @@ public class CustomExitStatusConfiguration {
                     System.out.println(">> step2 has executed");
                     return RepeatStatus.FINISHED;
                 })
-                .build();
-    }
-    @Bean
-    public Step step3() {
-        return stepBuilderFactory.get("step3")
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println(">> step3 has executed");
-                    return RepeatStatus.FINISHED;
-                })
+                .listener(new PassCheckingListener())
                 .build();
     }
 
-    @Bean
-    public Step step4() {
-        return stepBuilderFactory.get("step4")
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println(">> step4 has executed");
-                    return RepeatStatus.FINISHED;
-                })
-                .build();
+    static class PassCheckingListener extends StepExecutionListenerSupport {
+
+        public ExitStatus afterStep(StepExecution stepExecution) {
+
+            String exitCode = stepExecution.getExitStatus().getExitCode();
+            if (!exitCode.equals(ExitStatus.FAILED.getExitCode())) {
+                return new ExitStatus("PASS ");
+            } else {
+                return null;
+            }
+        }
     }
 
 }
-*/

@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -114,3 +115,4 @@ public class TransitionConfiguration {
         }
     }
 }
+*/
