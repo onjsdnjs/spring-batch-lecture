@@ -15,20 +15,10 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class BatchStatusExitStatusConfiguration {
+public class CustomExitStatusConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-  */
-/*  @Bean
-    public Job batchJob() {
-        return this.jobBuilderFactory.get("batchJob")
-                .start(step1())
-                .next(step2())
-                .build();
-    }*//*
-
 
     @Bean
     public Job batchJob() {
@@ -36,6 +26,10 @@ public class BatchStatusExitStatusConfiguration {
                 .start(step1())
                 .on("FAILED")
                 .to(step2())
+                .on("DO PASS")
+                .stop()
+                .from(step2()).on("*")
+                .to(step3())
                 .end()
                 .build();
     }
@@ -59,5 +53,25 @@ public class BatchStatusExitStatusConfiguration {
                 })
                 .build();
     }
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println(">> step3 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    @Bean
+    public Step step4() {
+        return stepBuilderFactory.get("step4")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println(">> step4 has executed");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
 }
 */
