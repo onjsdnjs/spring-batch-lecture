@@ -27,6 +27,18 @@ public class FlowJobConfiguration {
                 .end()
                 .build();
     }
+
+    @Bean
+    public Flow flow() {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
+
+        flowBuilder.start(step1())
+                .next(step2())
+                .end();
+
+        return flowBuilder.build();
+    }
+
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
@@ -54,14 +66,5 @@ public class FlowJobConfiguration {
                 }).build();
     }
 
-    @Bean
-    public Flow flow() {
-        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
 
-        flowBuilder.start(step1())
-                .next(step2())
-                .end();
-
-        return flowBuilder.build();
-    }
 }
