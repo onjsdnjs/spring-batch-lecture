@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobScope_StepScope_Configuration {
+public class FlowStep {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -28,7 +28,6 @@ public class JobScope_StepScope_Configuration {
         return jobBuilderFactory.get("batchJob")
                 .start(step1(null))
                 .next(step2())
-                .listener(new JobListener())
                 .build();
     }
 
