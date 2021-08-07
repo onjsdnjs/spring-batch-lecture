@@ -23,8 +23,11 @@ public class SimpleFlowConfiguration {
     public Job job() {
         return jobBuilderFactory.get("batchJob")
                 .start(flow1())
-                .on("COMPLETED")
-                .to(flow2())
+                    .on("COMPLETED")
+                    .to(flow2())
+                .from(flow1())
+                    .on("FAILED")
+                    .to(flow3())
                 .end()
                 .build();
     }
@@ -66,6 +69,7 @@ public class SimpleFlowConfiguration {
         return stepBuilderFactory.get("step1")
                 .tasklet((contribution, chunkContext) -> {
                     System.out.println(">> step1 has executed");
+//                    throw new RuntimeException("step1 was failed");
                     return RepeatStatus.FINISHED;
                 }).build();
     }
