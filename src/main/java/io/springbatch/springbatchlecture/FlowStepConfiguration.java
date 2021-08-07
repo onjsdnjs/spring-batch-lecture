@@ -10,6 +10,7 @@ import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class FlowStep {
+public class FlowStepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -26,53 +27,50 @@ public class FlowStep {
     @Bean
     public Job job() {
         return jobBuilderFactory.get("batchJob")
-                .start(step1(null))
+                .start(flowStep())
                 .next(step2())
                 .build();
     }
 
-    @Bean
-    @JobScope
-    public Step step1(@Value("#{jobExecutionContext['name']}") String name) {
-        System.out.println("jobExecutionContext['name'] : " + name);
-        return stepBuilderFactory.get("step1")
-                .tasklet(tasklet1(null))
+    public Step flowStep() {
+        return stepBuilderFactory.get("flowStep")
+                .flow(flow())
                 .build();
     }
 
     @Bean
-    public Step step2() {
-        return stepBuilderFactory.get("step2")
-                .tasklet(tasklet2(null))
-                .listener(new StepExecutionListener() {
-                    @Override
-                    public void beforeStep(StepExecution stepExecution) {
-                        stepExecution.getExecutionContext().putString("year", "2021");
-                    }
+    public Flow flow() {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("flow");
+        flowBuilder.start(step1())
+                .end();
+        return flowBuilder.build();
+    }
 
+    @Bean
+    @JobScope
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
+                .tasklet(new Tasklet() {
                     @Override
-                    public ExitStatus afterStep(StepExecution stepExecution) {
-                        return null;
+                    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+                        System.out.println("step1 was executed");
+                        throw new RuntimeException("step1 was failed");
+//                        return RepeatStatus.FINISHED;
                     }
                 })
                 .build();
     }
 
     @Bean
-    @StepScope
-    public Tasklet tasklet1(@Value("#{jobParameters['message']}") String message) {
-        return (stepContribution, chunkContext) -> {
-            System.out.println(message);
-            return RepeatStatus.FINISHED;
-        };
-    }
-
-    @Bean
-    @StepScope
-    public Tasklet tasklet2(@Value("#{stepExecutionContext['year']}") String year) {
-        return (stepContribution, chunkContext) -> {
-            System.out.println(year);
-            return RepeatStatus.FINISHED;
-        };
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
+                .tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+                        System.out.println("step2 was executed");
+                        return RepeatStatus.FINISHED;
+                    }
+                })
+                .build();
     }
 }
