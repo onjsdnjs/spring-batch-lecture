@@ -47,7 +47,6 @@ public class FlowStepConfiguration {
     }
 
     @Bean
-    @JobScope
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .tasklet(new Tasklet() {
