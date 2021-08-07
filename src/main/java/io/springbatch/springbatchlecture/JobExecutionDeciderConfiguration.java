@@ -19,12 +19,11 @@ public class JobExecutionDeciderConfiguration {
 
     @Bean
     public Job job() {
-        return jobBuilderFactory.get("job")
+        return jobBuilderFactory.get("batchJob")
                 .start(startStep())
                 .next(decider())
                 .from(decider()).on("ODD").to(oddStep())
                 .from(decider()).on("EVEN").to(evenStep())
-                .from(oddStep()).on("*").to(decider())
                 .end()
                 .build();
     }
