@@ -29,6 +29,7 @@ public class JobScope_StepScope_Configuration {
         return jobBuilderFactory.get("batchJob")
                 .start(step1(null))
                 .next(step2())
+                .listener(new JobListener())
                 .build();
     }
 
@@ -38,7 +39,7 @@ public class JobScope_StepScope_Configuration {
 
         System.out.println("jobParameters['message'] : " + message);
         return stepBuilderFactory.get("step1")
-                .tasklet(tasklet1())
+                .tasklet(tasklet1(null))
                 .build();
     }
 
@@ -54,9 +55,9 @@ public class JobScope_StepScope_Configuration {
 
     @Bean
     @StepScope
-    public Tasklet tasklet1() {
+    public Tasklet tasklet1(@Value("#{jobExecutionContext['name']}") String name){
         return (stepContribution, chunkContext) -> {
-            System.out.println("tasklet1 has executed");
+            System.out.println("jobExecutionContext['name'] : " + name);
             return RepeatStatus.FINISHED;
         };
     }
