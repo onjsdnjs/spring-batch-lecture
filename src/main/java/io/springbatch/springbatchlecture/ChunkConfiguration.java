@@ -39,7 +39,6 @@ public class ChunkConfiguration {
     }
 
     @Bean
-    @JobScope
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(3)
