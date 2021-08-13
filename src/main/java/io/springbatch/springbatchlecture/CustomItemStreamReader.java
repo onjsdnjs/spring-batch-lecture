@@ -26,7 +26,7 @@ public class CustomItemStreamReader implements ItemStreamReader<String> {
             index++;
         }
 
-        if(this.index == 42 && !restart) {
+        if(this.index == 6 && !restart) {
             throw new RuntimeException("Restart is required.");
         }
 
@@ -52,5 +52,6 @@ public class CustomItemStreamReader implements ItemStreamReader<String> {
 
     @Override
     public void close() throws ItemStreamException {
+        System.out.println("close");
     }
 }

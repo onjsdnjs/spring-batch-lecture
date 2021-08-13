@@ -35,18 +35,17 @@ public class ItemStreamConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<String, String>chunk(3)
+                .<String, String>chunk(5)
                 .reader(itemReader())
                 .writer(itemWriter())
-//                .stream(itemReader())
                 .build();
     }
 
     @Bean
     public CustomItemStreamReader itemReader() {
-        List<String> items = new ArrayList<>(100);
+        List<String> items = new ArrayList<>(10);
 
-        for(int i = 1; i <= 100; i++) {
+        for(int i = 1; i <= 10; i++) {
             items.add(String.valueOf(i));
         }
 
