@@ -70,14 +70,17 @@ public class FlatFilesConfiguration {
 
     @Bean
     public ItemReader itemReader(){
+
         FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
         itemReader.setResource(new ClassPathResource("/customer.csv"));
+
         DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
         lineMapper.setLineTokenizer(new DelimitedLineTokenizer());
         lineMapper.setFieldSetMapper(new CustomerFieldSetMapper());
+
         itemReader.setLineMapper(lineMapper);
-        itemReader.open(new ExecutionContext());
         itemReader.setLinesToSkip(1);
+
         return itemReader;
     }
 }
