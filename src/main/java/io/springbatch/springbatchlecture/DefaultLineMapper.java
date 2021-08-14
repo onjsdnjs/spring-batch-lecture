@@ -14,4 +14,12 @@ public class DefaultLineMapper<T> implements LineMapper<T> {
         return fieldSetMapper.mapFieldSet(tokenizer.tokenize(line));
     }
 
+    public void setLineTokenizer(LineTokenizer tokenizer) {
+        this.tokenizer = tokenizer;
+    }
+
+    public void setFieldSetMapper(FieldSetMapper<T> fieldSetMapper) {
+        this.fieldSetMapper = fieldSetMapper;
+    }
+
 }

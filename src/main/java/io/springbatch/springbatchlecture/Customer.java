@@ -6,7 +6,7 @@ import lombok.Data;
 public class Customer {
 
     private String name;
-    private String year;
     private int age;
+    private String year;
 
 }
