@@ -63,7 +63,6 @@ public class FlatFilesDelimitedConfiguration {
                 .name("flatFile")
                 .resource(new ClassPathResource("customer.csv"))
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
-//                .fieldSetMapper(new CustomerFieldSetMapper())
                 .targetType(Customer.class)
                 .linesToSkip(1)
                 .delimited().delimiter(",")
