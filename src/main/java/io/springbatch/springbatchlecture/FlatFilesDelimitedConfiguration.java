@@ -62,6 +62,18 @@ public class FlatFilesDelimitedConfiguration {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("flatFile")
                 .resource(new ClassPathResource("customer.csv"))
+                .fieldSetMapper(new CustomerFieldSetMapper())
+//                .targetType(Customer.class)
+                .linesToSkip(1)
+                .delimited().delimiter(",")
+                .names("name","year","age")
+                .build();
+    }
+
+    public FlatFileItemReader itemReader2() {
+        return new FlatFileItemReaderBuilder<Customer>()
+                .name("flatFile")
+                .resource(new ClassPathResource("customer.csv"))
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
                 .targetType(Customer.class)
                 .linesToSkip(1)
