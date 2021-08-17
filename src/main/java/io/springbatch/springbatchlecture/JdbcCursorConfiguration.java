@@ -44,7 +44,7 @@ public class JdbcCursorConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(3)
+                .<Customer, Customer>chunk(10)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
@@ -57,10 +57,10 @@ public class JdbcCursorConfiguration {
                 .fetchSize(10)
                 .sql("select id, firstName, lastName, birthdate from customer where firstName like ? order by lastName, firstName")
                 .beanRowMapper(Customer.class)
-                .queryArguments(new String[]{"A%"}, new int[]{Types.VARCHAR})
-//                .maxItemCount(20)
-//                .currentItemCount(5)
-//                .maxRows(100)
+                .queryArguments("A%")
+                .maxItemCount(3)
+                .currentItemCount(2)
+                .maxRows(100)
                 .dataSource(dataSource)
                 .build();
     }
