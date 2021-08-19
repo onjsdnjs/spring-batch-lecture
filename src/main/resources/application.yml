@@ -10,6 +10,9 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
 
 ---
 spring:
