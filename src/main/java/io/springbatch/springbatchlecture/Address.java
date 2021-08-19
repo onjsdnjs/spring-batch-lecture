@@ -3,7 +3,6 @@ package io.springbatch.springbatchlecture;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -11,16 +10,14 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Customer {
+public class Address {
 
 	@Id
 	@GeneratedValue
 	private Long Id;
-	private String firstname;
-	private String lastname;
-	private String birthdate;
+	private String location;
 
-	@OneToOne(mappedBy = "customer")
-	private Address address;
-
+	@OneToOne
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 }

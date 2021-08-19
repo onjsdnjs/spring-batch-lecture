@@ -60,23 +60,19 @@ public class JpaPagingConfiguration {
     @Bean
     public JpaPagingItemReader<Customer> customItemReader() {
 
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "A%");
-
         return new JpaPagingItemReaderBuilder<Customer>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
-                .pageSize(10)
-                .queryString("select c from Customer c where firstname like :firstname")
-                .parameterValues(parameters)
+                .pageSize(5)
+                .queryString("select c from Customer c join fetch c.address")
                 .build();
     }
 
     @Bean
     public ItemWriter<Customer> customItemWriter() {
         return items -> {
-            for (Customer item : items) {
-                System.out.println(item.toString());
+            for (Customer customer : items) {
+                System.out.println(customer.getAddress().getLocation());
             }
         };
     }
