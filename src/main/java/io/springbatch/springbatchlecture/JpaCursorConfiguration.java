@@ -47,7 +47,7 @@ public class JpaCursorConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(3)
+                .<Customer, Customer>chunk(2)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
