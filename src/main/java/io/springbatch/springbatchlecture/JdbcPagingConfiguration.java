@@ -60,7 +60,7 @@ public class JdbcPagingConfiguration {
     public JdbcPagingItemReader<Customer> customItemReader() throws Exception {
 
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "B%");
+        parameters.put("firstname", "A%");
 
         return new JdbcPagingItemReaderBuilder<Customer>()
                 .name("jdbcPagingItemReader")
