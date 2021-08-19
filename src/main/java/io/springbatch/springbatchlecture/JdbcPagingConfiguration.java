@@ -50,7 +50,7 @@ public class JdbcPagingConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(3)
+                .<Customer, Customer>chunk(10)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
@@ -60,7 +60,7 @@ public class JdbcPagingConfiguration {
     public JdbcPagingItemReader<Customer> customItemReader() throws Exception {
 
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("firstname", "A%");
+        parameters.put("firstname", "B%");
 
         return new JdbcPagingItemReaderBuilder<Customer>()
                 .name("jdbcPagingItemReader")
@@ -76,10 +76,10 @@ public class JdbcPagingConfiguration {
     @Bean
     public PagingQueryProvider createQueryProvider() throws Exception {
         SqlPagingQueryProviderFactoryBean queryProvider = new SqlPagingQueryProviderFactoryBean();
-        queryProvider.setDataSource(dataSource); // Database에 맞는 PagingQueryProvider를 선택하기 위해
-        queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+        queryProvider.setDataSource(dataSource);
+        queryProvider.setSelectClause("id,firstName,lastName,birthdate");
         queryProvider.setFromClause("from customer");
-		queryProvider.setWhereClause("where firstname like :firstname");
+        queryProvider.setWhereClause("where firstName like :firstname");
 
         Map<String, Order> sortKeys = new HashMap<>(1);
         sortKeys.put("id", Order.ASCENDING);

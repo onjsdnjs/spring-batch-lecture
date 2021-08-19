@@ -15,8 +15,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class Customer {
 
-	private int Id;
-	private String firstname;
-	private String lastname;
+	private Long id;
+	private String firstName;
+	private String lastName;
 	private String birthdate;
 }
