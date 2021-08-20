@@ -5,10 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
+@Setter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Address {
 
 	@Id

@@ -64,7 +64,8 @@ public class JpaPagingConfiguration {
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(5)
-                .queryString("select c from Customer c join fetch c.address")
+                .transacted(false)
+                .queryString("select c from Customer c")
                 .build();
     }
 
