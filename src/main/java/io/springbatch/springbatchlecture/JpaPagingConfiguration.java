@@ -63,9 +63,8 @@ public class JpaPagingConfiguration {
         return new JpaPagingItemReaderBuilder<Customer>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
-                .pageSize(5)
-                .transacted(false)
-                .queryString("select c from Customer c")
+                .pageSize(10)
+                .queryString("select c from Customer c join fetch c.address")
                 .build();
     }
 

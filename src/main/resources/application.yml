@@ -11,8 +11,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
     properties:
-      hibernate:
-        format-sql: true
+      hibernate.format_sql: true
 
 ---
 spring:
