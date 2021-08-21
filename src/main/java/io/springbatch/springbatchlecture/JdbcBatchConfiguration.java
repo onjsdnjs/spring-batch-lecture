@@ -80,7 +80,8 @@ public class JdbcBatchConfiguration {
         return new JdbcBatchItemWriterBuilder<Customer>()
                 .dataSource(dataSource)
                 .sql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)")
-                .beanMapped()
+//                .beanMapped()
+                .columnMapped()
                 .build();
     }
 
