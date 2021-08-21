@@ -73,6 +73,18 @@ public class FlatFilesDelimitedConfiguration {
         return reader;
     }
 
+    @Bean
+    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
+        return new FlatFileItemWriterBuilder<Customer>()
+                .name("customerWriter")
+                .resource(new FileSystemResource("C:\\jsw\\inflearn\\spring-batch-lecture\\src\\main\\resources\\customer.csv"))
+                .append(true)
+                .delimited()
+                .delimiter(",")
+                .names(new String[] {"id", "name", "age"})
+                .build();
+    }
+
     /*@Bean
     public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
 
@@ -91,15 +103,6 @@ public class FlatFilesDelimitedConfiguration {
                 .build();
     }*/
 
-    @Bean
-    public FlatFileItemWriter<Customer> customItemWriter() throws Exception {
-        return new FlatFileItemWriterBuilder<Customer>()
-                .name("customerWriter")
-                .resource(new ClassPathResource("customer.csv"))
-                .delimited()
-                .delimiter(",")
-                .names(new String[] {"id", "name", "age"})
-                .build();
-    }
+
 }
 
