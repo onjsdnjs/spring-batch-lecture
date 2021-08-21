@@ -51,6 +51,14 @@ public class JpaConfiguration {
     }
 
     @Bean
+    public JpaItemWriter<Customer> customItemWriter() {
+        return new JpaItemWriterBuilder<Customer>()
+                .entityManagerFactory(entityManagerFactory)
+                .usePersist(true)
+                .build();
+    }
+
+    @Bean
     public JdbcPagingItemReader<Customer> customItemReader() {
 
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
@@ -78,12 +86,5 @@ public class JpaConfiguration {
         return reader;
     }
 
-    @Bean
-    public JpaItemWriter<Customer> customItemWriter() {
-        return new JpaItemWriterBuilder<Customer>()
-                .entityManagerFactory(entityManagerFactory)
-                .usePersist(true)
-                .build();
-    }
 }
 
