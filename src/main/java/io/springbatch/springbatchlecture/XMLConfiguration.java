@@ -76,7 +76,7 @@ public class XMLConfiguration {
         return new StaxEventItemWriterBuilder<Customer>()
                 .name("customersWriter")
                 .marshaller(itemMarshaller())
-                .resource(new ClassPathResource("customer.xml"))
+                .resource(new FileSystemResource("customer.xml"))
                 .rootTagName("customer")
                 .overwriteOutput(true)
                 .build();
