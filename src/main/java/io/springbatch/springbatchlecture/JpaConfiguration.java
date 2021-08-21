@@ -5,6 +5,7 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
@@ -44,18 +45,24 @@ public class JpaConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(10)
+                .<Customer, Customer2>chunk(10)
                 .reader(customItemReader())
+                .processor(customItemProcess())
                 .writer(customItemWriter())
                 .build();
     }
 
     @Bean
-    public JpaItemWriter<Customer> customItemWriter() {
-        return new JpaItemWriterBuilder<Customer>()
+    public JpaItemWriter<Customer2> customItemWriter() {
+        return new JpaItemWriterBuilder<Customer2>()
                 .entityManagerFactory(entityManagerFactory)
                 .usePersist(true)
                 .build();
+    }
+
+    @Bean
+    public ItemProcessor<? super Customer, ? extends Customer2> customItemProcess() {
+        return new CustomItemProcess();
     }
 
     @Bean

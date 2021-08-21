@@ -11,6 +11,6 @@ public class CustomerRowMapper implements RowMapper<Customer> {
 		return new Customer(rs.getLong("id"),
 				rs.getString("firstName"),
 				rs.getString("lastName"),
-				rs.getDate("birthdate"));
+				rs.getString("birthdate"));
 	}
 }
