@@ -37,7 +37,7 @@ public class AdapterConfiguration {
                     @Override
                     public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
                         i++;
-                        return i > 10 ? null : "item";
+                        return i > 10 ? null : "item" + i;
                     }
                 })
                 .writer(customItemWriter())
@@ -52,7 +52,6 @@ public class AdapterConfiguration {
         ItemWriterAdapter  writer = new ItemWriterAdapter();
          writer.setTargetObject(customService());
          writer.setTargetMethod("joinCustomer");
-
         return  writer;
     }
 
