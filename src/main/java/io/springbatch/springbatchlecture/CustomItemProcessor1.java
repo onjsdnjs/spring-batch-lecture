@@ -6,6 +6,7 @@ public class CustomItemProcessor1 implements ItemProcessor<ProcessorInfo, Proces
 
     @Override
     public ProcessorInfo process(ProcessorInfo item) throws Exception {
+        System.out.println("CustomItemProcessor1");
         return item;
     }
 }
