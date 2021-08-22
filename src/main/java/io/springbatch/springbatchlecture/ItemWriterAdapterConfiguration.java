@@ -49,7 +49,7 @@ public class ItemWriterAdapterConfiguration {
     @Bean
     public ItemWriterAdapter customItemWriter() {
 
-        ItemWriterAdapter  writer = new ItemWriterAdapter();
+        ItemWriterAdapter<String>  writer = new ItemWriterAdapter<>();
          writer.setTargetObject(customService());
          writer.setTargetMethod("joinCustomer");
         return  writer;

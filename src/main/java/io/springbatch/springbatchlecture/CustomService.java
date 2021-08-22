@@ -1,10 +1,8 @@
 package io.springbatch.springbatchlecture;
 
-import java.util.List;
+public class CustomService<T> {
 
-public class CustomService {
-
-    public void joinCustomer(Object item){
+    public void customWrite(T item){
 
         System.out.println(item);
     }
