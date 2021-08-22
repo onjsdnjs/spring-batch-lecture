@@ -1,8 +1,10 @@
 package io.springbatch.springbatchlecture;
 
-public class CustomService {
+public class CustomService<T> {
 
-    public void joinCustomer(){
-        System.out.println(">> Customer is joined");
+    private int cnt = 0;
+
+    public T joinCustomer(){
+        return (T)("item" + cnt++);
     }
 }

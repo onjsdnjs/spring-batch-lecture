@@ -67,8 +67,8 @@ public class ItemReaderAdapterConfiguration {
         return reader;
     }
 
-    private CustomService customService() {
-        return new CustomService();
+    private CustomService<String> customService() {
+        return new CustomService<>();
     }
 
     @Bean
