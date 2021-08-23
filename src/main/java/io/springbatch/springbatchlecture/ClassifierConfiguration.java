@@ -60,9 +60,9 @@ public class ClassifierConfiguration {
     @Bean
     public ItemProcessor customItemProcessor() {
 
-        ClassifierCompositeItemProcessor processor = new ClassifierCompositeItemProcessor();
+        ClassifierCompositeItemProcessor<ProcessorInfo, ProcessorInfo> processor = new ClassifierCompositeItemProcessor<>();
 
-        ProcessorClassifier<ItemProcessor> classifier = new ProcessorClassifier<>();
+        ProcessorClassifier<ProcessorInfo, ItemProcessor<?, ? extends ProcessorInfo>> classifier = new ProcessorClassifier();
         Map<Integer, ItemProcessor<ProcessorInfo, ProcessorInfo>> processorMap = new HashMap<>();
         processorMap.put(1, new CustomItemProcessor1());
         processorMap.put(2, new CustomItemProcessor2());
