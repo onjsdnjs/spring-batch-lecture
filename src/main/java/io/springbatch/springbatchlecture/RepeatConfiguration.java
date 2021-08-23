@@ -70,10 +70,10 @@ public class RepeatConfiguration {
 
                         // 여러 유형의 CompletionPolicy 를 복합적으로 처리함
                         // 여러 개 중에 먼저 조건이 부합하는 CompletionPolicy 에 따라 반복문이 종료됨
-                        CompositeCompletionPolicy completionPolicy = new CompositeCompletionPolicy();
-                        CompletionPolicy[] completionPolicies = new CompletionPolicy[]{new TimeoutTerminationPolicy(3000),new SimpleCompletionPolicy(2)};
-                        completionPolicy.setPolicies(completionPolicies);
-                        template.setCompletionPolicy(completionPolicy);
+//                        CompositeCompletionPolicy completionPolicy = new CompositeCompletionPolicy();
+//                        CompletionPolicy[] completionPolicies = new CompletionPolicy[]{new TimeoutTerminationPolicy(3000),new SimpleCompletionPolicy(2)};
+//                        completionPolicy.setPolicies(completionPolicies);
+//                        template.setCompletionPolicy(completionPolicy);
 
                         // 예외 제한 횟수만큼 반복문 실행
 //                        template.setExceptionHandler(simpleLimitExceptionHandler());
