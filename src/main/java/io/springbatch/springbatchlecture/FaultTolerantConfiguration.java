@@ -50,9 +50,11 @@ public class FaultTolerantConfiguration {
                     int i = 0;
                     @Override
                     public String read() {
-                        throw new IllegalArgumentException("skip");
-//                        i++;
-//                        return i > 3 ? null : "item" + i;
+                        i++;
+                        if(i == 1) {
+                            throw new IllegalArgumentException("skip");
+                        }
+                        return i > 3 ? null : "item" + i;
                     }
                 })
                 .processor((ItemProcessor<String, String>) item -> {
@@ -62,7 +64,9 @@ public class FaultTolerantConfiguration {
                 .writer(items -> System.out.println(items))
                 .faultTolerant()
                 .skip(IllegalArgumentException.class)
+                .skipLimit(1)
                 .retry(IllegalStateException.class)
+                .retryLimit(2)
                 .build();
     }
 
