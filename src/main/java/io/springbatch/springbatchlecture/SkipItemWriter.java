@@ -16,7 +16,7 @@ public class SkipItemWriter implements ItemWriter<String> {
 				throw new SkippableException("Write failed. cnt:" + cnt);
 			}
 			else {
-				System.out.println(item);
+				System.out.println("ItemWriter : " + item);
 			}
 		}
 	}

@@ -43,6 +43,8 @@ public class SkipConfiguration {
                 .faultTolerant()
 //                .noSkip(SkippableException.class) // 아래 설정이 위의 설정을 덮어씀, skip() 설정이 우선
                 .skipPolicy(limitCheckingItemSkipPolicy())
+//                .retry(SkippableException.class)
+//                .retryLimit(2)
 //                .skip(SkippableException.class)
 //                .skipLimit(2)
 //                .noRollback(SkippableException.class)
@@ -55,7 +57,7 @@ public class SkipConfiguration {
         Map<Class<? extends Throwable>, Boolean> skippableExceptionClasses = new HashMap<>();
         skippableExceptionClasses.put(SkippableException.class, true);
 
-        LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy = new LimitCheckingItemSkipPolicy(2, skippableExceptionClasses);
+        LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy = new LimitCheckingItemSkipPolicy(3, skippableExceptionClasses);
 
         return limitCheckingItemSkipPolicy;
     }
@@ -65,7 +67,7 @@ public class SkipConfiguration {
 
         List<String> items = new ArrayList<>();
 
-        for(int i = 0; i < 30; i++) {
+        for(int i = 0; i < 20; i++) {
             items.add(String.valueOf(i));
         }
 
