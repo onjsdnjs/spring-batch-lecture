@@ -12,6 +12,7 @@ public class SkipItemWriter implements ItemWriter<String> {
 	public void write(List<? extends String> items) throws Exception {
 		for (String item : items) {
 			if(item.equals("-12")) {
+				System.out.println("ItemWriter : " + item);
 				cnt++;
 				throw new SkippableException("Write failed. cnt:" + cnt);
 			}

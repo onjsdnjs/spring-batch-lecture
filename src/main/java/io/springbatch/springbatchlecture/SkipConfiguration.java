@@ -9,6 +9,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.core.step.skip.NeverSkipItemSkipPolicy;
 import org.springframework.batch.core.step.skip.SkipException;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,16 +38,27 @@ public class SkipConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<String, String>chunk(5)
-                .reader(reader())
+                .reader(new ItemReader<String>() {
+                    int i = 0;
+                    @Override
+                    public String read() throws SkippableException {
+                        i++;
+                        if(i == 3) {
+                            throw new SkippableException("skip");
+                        }
+                        System.out.println("ItemReader : " + i);
+                        return i > 20 ? null : String.valueOf(i);
+                    }
+                })
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
 //                .noSkip(SkippableException.class) // 아래 설정이 위의 설정을 덮어씀, skip() 설정이 우선
-                .skipPolicy(limitCheckingItemSkipPolicy())
+//                .skipPolicy(limitCheckingItemSkipPolicy())
 //                .retry(SkippableException.class)
 //                .retryLimit(2)
-//                .skip(SkippableException.class)
-//                .skipLimit(2)
+                .skip(SkippableException.class)
+                .skipLimit(2)
 //                .noRollback(SkippableException.class)
                 .build();
     }
@@ -60,18 +72,6 @@ public class SkipConfiguration {
         LimitCheckingItemSkipPolicy limitCheckingItemSkipPolicy = new LimitCheckingItemSkipPolicy(3, skippableExceptionClasses);
 
         return limitCheckingItemSkipPolicy;
-    }
-
-    @Bean
-    public ListItemReader<String> reader() {
-
-        List<String> items = new ArrayList<>();
-
-        for(int i = 0; i < 20; i++) {
-            items.add(String.valueOf(i));
-        }
-
-        return new ListItemReader<>(items);
     }
 
     @Bean
