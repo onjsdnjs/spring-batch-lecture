@@ -1,7 +1,7 @@
 
 package io.springbatch.springbatchlecture;
 
-public class NoRetryException extends Exception {
+public class NoRetryException extends RuntimeException {
 
 	public NoRetryException() {
 		super();
