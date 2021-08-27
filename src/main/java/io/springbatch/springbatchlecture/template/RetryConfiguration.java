@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture.template;
 
 import io.springbatch.springbatchlecture.*;
@@ -30,7 +31,7 @@ public class RetryConfiguration {
 
     @Bean
     public Job job() throws Exception {
-        return jobBuilderFactory.get("batchJob")
+        return jobBuilderFactory.get("batchJob3")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .build();
@@ -43,6 +44,9 @@ public class RetryConfiguration {
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .faultTolerant()
+//                .skip(RetryableException.class)
+//                .skipLimit(1)
                 .build();
     }
 
@@ -80,12 +84,13 @@ public class RetryConfiguration {
         FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
         backOffPolicy.setBackOffPeriod(2000); //지정한 시간만큼 대기후 재시도 한다.
 
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(1,retryableExceptionClasses);
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(2,retryableExceptionClasses);
         RetryTemplate retryTemplate = new RetryTemplate();
-        retryTemplate.setBackOffPolicy(backOffPolicy);
+//        retryTemplate.setBackOffPolicy(backOffPolicy);
         retryTemplate.setRetryPolicy(retryPolicy);
 
         return retryTemplate;
     }
 }
 
+*/

@@ -10,14 +10,15 @@ public class RetryItemProcessor implements ItemProcessor<String, String> {
 
 	@Override
 	public String process(String item) throws Exception {
-		if(item.equals("1")) {
+//		return String.valueOf(Integer.valueOf(item) * -1);
+		/*if(item.equals("1")) {
 
 			cnt++;
 			if(cnt == 1) {
-				System.out.println("item " + item + " failed");
+				System.out.println("item " + item + " failed");*/
 				throw new RetryableException("Process failed. cnt:" + cnt);
 
-			}else if(cnt == 2) {
+			/*}else if(cnt == 2) {
 				System.out.println("item " + item + " failed");
 				throw new NoRetryException("Process failed. cnt:" + cnt);
 
@@ -28,6 +29,6 @@ public class RetryItemProcessor implements ItemProcessor<String, String> {
 			}
 		} else {
 			return String.valueOf(Integer.valueOf(item) * -1);
-		}
+		}*/
 	}
 }

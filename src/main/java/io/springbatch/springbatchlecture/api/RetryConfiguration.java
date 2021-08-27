@@ -25,7 +25,7 @@ public class RetryConfiguration {
 
     @Bean
     public Job job() throws Exception {
-        return jobBuilderFactory.get("batchJob")
+        return jobBuilderFactory.get("batchJob1")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .build();
@@ -39,9 +39,11 @@ public class RetryConfiguration {
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
+                .skip(RetryableException.class)
+                .skipLimit(3)
                 .noRetry(NoRetryException.class)
                 .retry(RetryableException.class)
-                .retryLimit(1)
+                .retryLimit(2)
                 .build();
     }
 
@@ -68,6 +70,17 @@ public class RetryConfiguration {
     public ItemWriter writer() {
         RetryItemWriter writer = new RetryItemWriter();
         return writer;
+    }
+
+    @Bean
+    public SimpleRetryPolicy limitCheckingItemSkipPolicy() {
+
+        Map<Class<? extends Throwable>, Boolean> retryableExceptionClasses = new HashMap<>();
+        retryableExceptionClasses.put(RetryableException.class, true);
+
+        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, retryableExceptionClasses);
+
+        return simpleRetryPolicy;
     }
 }
 
