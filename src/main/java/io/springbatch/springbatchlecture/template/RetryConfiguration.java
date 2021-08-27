@@ -1,4 +1,3 @@
-/*
 package io.springbatch.springbatchlecture.template;
 
 import io.springbatch.springbatchlecture.*;
@@ -45,8 +44,8 @@ public class RetryConfiguration {
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
-//                .skip(RetryableException.class)
-//                .skipLimit(1)
+                .skip(RetryableException.class)
+                .skipLimit(2)
                 .build();
     }
 
@@ -93,4 +92,3 @@ public class RetryConfiguration {
     }
 }
 
-*/

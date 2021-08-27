@@ -12,9 +12,12 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
@@ -39,9 +42,9 @@ public class RetryConfiguration {
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
-                .skip(RetryableException.class)
-                .skipLimit(3)
-                .noRetry(NoRetryException.class)
+//                .skip(RetryableException.class)
+//                .skipLimit(3)
+//                .noRetry(NoRetryException.class)
                 .retry(RetryableException.class)
                 .retryLimit(2)
                 .build();
