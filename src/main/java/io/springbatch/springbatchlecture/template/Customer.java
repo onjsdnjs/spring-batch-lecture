@@ -31,7 +31,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 public class Customer {
 
-	private Long Id;
+	private Long id;
 	private String firstname;
 	private String lastname;
 	private String birthdate;
