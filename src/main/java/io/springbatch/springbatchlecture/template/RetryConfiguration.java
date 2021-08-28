@@ -44,8 +44,8 @@ public class RetryConfiguration {
                 .processor(processor())
                 .writer(writer())
                 .faultTolerant()
-                .skip(RetryableException.class)
-                .skipLimit(2)
+//                .skip(RetryableException.class)
+//                .skipLimit(2)
                 .build();
     }
 
@@ -76,14 +76,13 @@ public class RetryConfiguration {
     @Bean
     public RetryTemplate retryTemplate() {
 
-        Map<Class<? extends Throwable>, Boolean> retryableExceptionClasses = new HashMap<>();
-        retryableExceptionClasses.put(RetryableException.class, true);
-        retryableExceptionClasses.put(RuntimeException.class, true);
+        Map<Class<? extends Throwable>, Boolean> exceptionClass = new HashMap<>();
+        exceptionClass.put(RetryableException.class, true);
 
-        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-        backOffPolicy.setBackOffPeriod(2000); //지정한 시간만큼 대기후 재시도 한다.
+//        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+//        backOffPolicy.setBackOffPeriod(2000); //지정한 시간만큼 대기후 재시도 한다.
 
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(2,retryableExceptionClasses);
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(2,exceptionClass);
         RetryTemplate retryTemplate = new RetryTemplate();
 //        retryTemplate.setBackOffPolicy(backOffPolicy);
         retryTemplate.setRetryPolicy(retryPolicy);

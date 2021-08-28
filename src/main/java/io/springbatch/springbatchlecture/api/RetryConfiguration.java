@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture.api;
 
 import io.springbatch.springbatchlecture.*;
@@ -43,13 +44,23 @@ public class RetryConfiguration {
                 .writer(writer())
                 .faultTolerant()
 //                .skip(RetryableException.class)
-//                .skipLimit(3)
-//                .noRetry(NoRetryException.class)
+//                .skipLimit(2)
                 .retry(RetryableException.class)
+                .noRetry(NoRetryException.class)
                 .retryLimit(2)
                 .build();
     }
 
+    @Bean
+    public SimpleRetryPolicy limitCheckingItemSkipPolicy() {
+
+        Map<Class<? extends Throwable>, Boolean> exceptionClass = new HashMap<>();
+        exceptionClass.put(RetryableException.class, true);
+
+        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(2, exceptionClass);
+
+        return simpleRetryPolicy;
+    }
 
     @Bean
     public ListItemReader<String> reader() {
@@ -63,6 +74,7 @@ public class RetryConfiguration {
         return new ListItemReader<>(items);
     }
 
+
     @Bean
     public ItemProcessor processor() {
         RetryItemProcessor processor = new RetryItemProcessor();
@@ -75,15 +87,7 @@ public class RetryConfiguration {
         return writer;
     }
 
-    @Bean
-    public SimpleRetryPolicy limitCheckingItemSkipPolicy() {
 
-        Map<Class<? extends Throwable>, Boolean> retryableExceptionClasses = new HashMap<>();
-        retryableExceptionClasses.put(RetryableException.class, true);
-
-        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, retryableExceptionClasses);
-
-        return simpleRetryPolicy;
-    }
 }
 
+*/

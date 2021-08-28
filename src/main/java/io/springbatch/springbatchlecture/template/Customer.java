@@ -29,11 +29,8 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Customer {
 
-	@Id
-	@GeneratedValue
 	private Long Id;
 	private String firstname;
 	private String lastname;
