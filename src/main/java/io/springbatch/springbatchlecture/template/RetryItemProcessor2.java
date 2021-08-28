@@ -28,13 +28,13 @@ public class RetryItemProcessor2 implements ItemProcessor<String, Customer> {
 				if(item.equals("1") || item.equals("2")){
 					throw new RetryableException("failed");
 				}
-				return new Customer(Long.valueOf(item),"Hong","gildong","2021.01.02");
+				return new Customer(item);
 			}
 		}, new RecoveryCallback<Customer>() {
 			@Override
 			public Customer recover(RetryContext context) throws Exception {
 				// 재시도가 모두 소진되었을 때 수행
-				return new Customer(Long.valueOf(item),"Lee","gildong","2021.01.03");
+				return new Customer(item);
 			}
 		},
 				new DefaultRetryState(item, rollbackClassifier));

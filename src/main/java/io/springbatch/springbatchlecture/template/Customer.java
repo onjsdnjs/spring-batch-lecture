@@ -17,22 +17,13 @@ package io.springbatch.springbatchlecture.template;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * @author Michael Minella
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
 
-	private Long id;
-	private String firstname;
-	private String lastname;
-	private String birthdate;
+	private String item;
 }
