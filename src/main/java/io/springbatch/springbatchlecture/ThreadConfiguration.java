@@ -10,6 +10,7 @@ import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.item.support.SynchronizedItemStreamReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -43,30 +44,47 @@ public class ThreadConfiguration {
                 .processor(new ItemProcessor<String, String>() {
                     @Override
                     public String process(String item) throws Exception {
-                        System.out.println("item = " + item);
+                        System.out.println("Processor => Thread = " + Thread.currentThread().getName() + "item = " + item);
                         return item;
                     }
                 })
                 .writer(new ItemWriter<String>() {
                     @Override
                     public void write(List<? extends String> items) throws Exception {
-                        System.out.println("items = " + items);
+                        System.out.println("Writer => Thread = " + Thread.currentThread().getName() + "item = " + items);
                     }
                 })
                 .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(4)
                 .build();
     }
 
     @Bean
-    public ListItemReader<String> reader() {
+    public SynchronizedItemStreamReader<String> reader() {
 
         List<String> items = new ArrayList<>();
 
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 20; i++) {
             items.add(String.valueOf(i));
         }
+        CustomListItemReader<String> customListItemReader = new CustomListItemReader(items);
+        SynchronizedItemStreamReader synchronizedItemStreamReader =  new SynchronizedItemStreamReader();
+        synchronizedItemStreamReader.setDelegate(customListItemReader);
 
-        return new ListItemReader<>(items);
+        return synchronizedItemStreamReader;
+    }
+
+    @Bean
+    public ListItemReader<String> reader2() {
+
+        List<String> items = new ArrayList<>();
+
+        for(int i = 0; i < 20; i++) {
+            items.add(String.valueOf(i));
+        }
+        CustomListItemReader<String> customListItemReader = new CustomListItemReader(items);
+
+        return customListItemReader;
     }
 }
 
