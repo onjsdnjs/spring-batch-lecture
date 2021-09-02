@@ -37,9 +37,30 @@ public class AsyncConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
-//                .start(asyncStep1())
+//                .start(step1())
+                .start(asyncStep1())
                 .listener(new StopWatchJobListener())
+                .build();
+    }
+
+    @Bean
+    public Step step1() throws Exception {
+        return stepBuilderFactory.get("step1")
+                .chunk(100)
+                .reader(pagingItemReader())
+                .processor(customItemProcessor())
+                .writer(customItemWriter())
+                .build();
+    }
+
+    @Bean
+    public Step asyncStep1() throws Exception {
+        return stepBuilderFactory.get("asyncStep1")
+                .chunk(100)
+                .reader(pagingItemReader())
+                .processor(asyncItemProcessor())
+                .writer(asyncItemWriter())
+//                .taskExecutor(taskExecutor())
                 .build();
     }
 
@@ -72,7 +93,7 @@ public class AsyncConfiguration {
             @Override
             public Customer process(Customer item) throws Exception {
 
-                Thread.sleep(10);
+                Thread.sleep(100);
 
                 return new Customer(item.getId(),
                         item.getFirstName().toUpperCase(),
@@ -80,17 +101,6 @@ public class AsyncConfiguration {
                         item.getBirthdate());
             }
         };
-    }
-
-    @Bean
-    public AsyncItemProcessor asyncItemProcessor() throws Exception {
-        AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor();
-
-        asyncItemProcessor.setDelegate(customItemProcessor());
-        asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        asyncItemProcessor.afterPropertiesSet();
-
-        return asyncItemProcessor;
     }
 
     @Bean
@@ -106,6 +116,18 @@ public class AsyncConfiguration {
     }
 
     @Bean
+    public AsyncItemProcessor asyncItemProcessor() throws Exception {
+        AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor();
+
+        asyncItemProcessor.setDelegate(customItemProcessor());
+//        asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        asyncItemProcessor.setTaskExecutor(taskExecutor());
+        asyncItemProcessor.afterPropertiesSet();
+
+        return asyncItemProcessor;
+    }
+
+    @Bean
     public AsyncItemWriter asyncItemWriter() throws Exception {
         AsyncItemWriter<Customer> asyncItemWriter = new AsyncItemWriter<>();
 
@@ -115,26 +137,7 @@ public class AsyncConfiguration {
         return asyncItemWriter;
     }
 
-    @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .chunk(300)
-                .reader(pagingItemReader())
-                .processor(customItemProcessor())
-                .writer(customItemWriter())
-                .build();
-    }
 
-    @Bean
-    public Step asyncStep1() throws Exception {
-        return stepBuilderFactory.get("asyncStep1")
-                .chunk(300)
-                .reader(pagingItemReader())
-                .processor(asyncItemProcessor())
-                .writer(asyncItemWriter())
-                .taskExecutor(taskExecutor())
-                .build();
-    }
 
     @Bean
     public TaskExecutor taskExecutor(){
