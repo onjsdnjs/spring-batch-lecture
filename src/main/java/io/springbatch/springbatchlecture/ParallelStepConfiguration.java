@@ -8,6 +8,7 @@ import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
@@ -37,7 +38,6 @@ public class ParallelStepConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(flow1())
-//                .next(flow2())
                 .split(taskExecutor()).add(flow2())
                 .end()
                 .listener(new StopWatchJobListener())
@@ -46,19 +46,27 @@ public class ParallelStepConfiguration {
 
     @Bean
     public Flow flow1() {
+
+        TaskletStep step = stepBuilderFactory.get("step1")
+                            .tasklet(tasklet()).build();
+
         return new FlowBuilder<Flow>("flow1")
-                .start(stepBuilderFactory.get("step1")
-                        .tasklet(tasklet()).build())
+                .start(step)
                 .build();
     }
 
     @Bean
     public Flow flow2() {
+
+        TaskletStep step1 = stepBuilderFactory.get("step1")
+                .tasklet(tasklet()).build();
+
+        TaskletStep step2 = stepBuilderFactory.get("step1")
+                .tasklet(tasklet()).build();
+
         return new FlowBuilder<Flow>("flow2")
-                .start(stepBuilderFactory.get("step2")
-                        .tasklet(tasklet()).build())
-                .next(stepBuilderFactory.get("step3")
-                        .tasklet(tasklet()).build())
+                .start(step1)
+                .next(step2)
                 .build();
     }
 
