@@ -38,6 +38,7 @@ public class ParallelStepConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(flow1())
+//                .next(flow2())
                 .split(taskExecutor()).add(flow2())
                 .end()
                 .listener(new StopWatchJobListener())
@@ -58,10 +59,10 @@ public class ParallelStepConfiguration {
     @Bean
     public Flow flow2() {
 
-        TaskletStep step1 = stepBuilderFactory.get("step1")
+        TaskletStep step1 = stepBuilderFactory.get("step2")
                 .tasklet(tasklet()).build();
 
-        TaskletStep step2 = stepBuilderFactory.get("step1")
+        TaskletStep step2 = stepBuilderFactory.get("step3")
                 .tasklet(tasklet()).build();
 
         return new FlowBuilder<Flow>("flow2")
@@ -78,8 +79,8 @@ public class ParallelStepConfiguration {
     @Bean
     public TaskExecutor taskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
         executor.setThreadNamePrefix("async-thread-");
         return executor;
     }
