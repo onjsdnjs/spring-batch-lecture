@@ -45,8 +45,8 @@ public class MultiThreadStepConfiguration {
                 .<Customer, Customer>chunk(100)
                 .reader(pagingItemReader())
                 .writer(customItemWriter())
-//                .taskExecutor(taskExecutor())
-//                .throttleLimit(2)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(2)
                 .build();
     }
 
@@ -55,7 +55,7 @@ public class MultiThreadStepConfiguration {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
-        reader.setFetchSize(300);
+        reader.setPageSize(100);
         reader.setRowMapper(new CustomerRowMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
