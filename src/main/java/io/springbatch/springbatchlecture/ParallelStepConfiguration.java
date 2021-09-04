@@ -41,7 +41,6 @@ public class ParallelStepConfiguration {
                 .split(taskExecutor()).add(flow2())
                 .end()
                 .listener(new StopWatchJobListener())
-
                 .build();
     }
 
