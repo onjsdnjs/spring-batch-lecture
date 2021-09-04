@@ -44,9 +44,13 @@ public class MultiThreadStepConfiguration {
         return stepBuilderFactory.get("step1")
                 .<Customer, Customer>chunk(100)
                 .reader(pagingItemReader())
+                .listener(new CustomReadListener())
+                .processor((ItemProcessor<Customer, Customer>) item -> item)
+                .listener(new CustomProcessListener())
                 .writer(customItemWriter())
+                .listener(new CustomWriteListener())
                 .taskExecutor(taskExecutor())
-                .throttleLimit(2)
+//                .throttleLimit(2)
                 .build();
     }
 
@@ -88,8 +92,8 @@ public class MultiThreadStepConfiguration {
     @Bean
     public TaskExecutor taskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(3);
         executor.setThreadNamePrefix("async-thread-");
         return executor;
     }
