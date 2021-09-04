@@ -35,6 +35,7 @@ public class MultiThreadStepConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
+                .listener(new StopWatchJobListener())
                 .build();
     }
 
@@ -44,8 +45,8 @@ public class MultiThreadStepConfiguration {
                 .<Customer, Customer>chunk(100)
                 .reader(pagingItemReader())
                 .writer(customItemWriter())
-                .taskExecutor(taskExecutor())
-                .throttleLimit(2)
+//                .taskExecutor(taskExecutor())
+//                .throttleLimit(2)
                 .build();
     }
 
