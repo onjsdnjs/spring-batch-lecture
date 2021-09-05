@@ -38,7 +38,6 @@ public class ParallelStepConfiguration {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(flow1())
-//                .next(flow2())
                 .split(taskExecutor()).add(flow2())
                 .end()
                 .listener(new StopWatchJobListener())
