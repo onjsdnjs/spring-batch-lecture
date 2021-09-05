@@ -38,6 +38,25 @@ public class PartitioningConfiguration {
     }
 
     @Bean
+    public Step step1() throws Exception {
+        return stepBuilderFactory.get("step1")
+                .partitioner(slaveStep().getName(), partitioner())
+                .step(slaveStep())
+                .gridSize(4)
+                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .build();
+    }
+
+    @Bean
+    public Step slaveStep() {
+        return stepBuilderFactory.get("slaveStep")
+                .<Customer, Customer>chunk(1000)
+                .reader(pagingItemReader(null, null))
+                .writer(customerItemWriter())
+                .build();
+    }
+
+    @Bean
     public ColumnRangePartitioner partitioner() {
         ColumnRangePartitioner columnRangePartitioner = new ColumnRangePartitioner();
 
@@ -89,23 +108,6 @@ public class PartitioningConfiguration {
         return itemWriter;
     }
 
-    @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
-                .partitioner(slaveStep().getName(), partitioner())
-                .step(slaveStep())
-                .gridSize(4)
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .build();
-    }
 
-    @Bean
-    public Step slaveStep() {
-        return stepBuilderFactory.get("slaveStep")
-                .<Customer, Customer>chunk(1000)
-                .reader(pagingItemReader(null, null))
-                .writer(customerItemWriter())
-                .build();
-    }
 }
 
