@@ -33,13 +33,13 @@ public class PartitioningConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
+                .start(masterStep())
                 .build();
     }
 
     @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
+    public Step masterStep() throws Exception {
+        return stepBuilderFactory.get("masterStep")
                 .partitioner(slaveStep().getName(), partitioner())
                 .step(slaveStep())
                 .gridSize(4)
