@@ -1,3 +1,4 @@
+/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -9,10 +10,10 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.*;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -20,8 +21,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
@@ -43,7 +42,7 @@ public class NotSynchronizedConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(60)
+                .<Customer, Customer>chunk(100)
                 .reader(customItemReader())
                 .listener(new ItemReadListener<Customer>() {
                     @Override
@@ -61,15 +60,6 @@ public class NotSynchronizedConfiguration {
 
                     }
                 })
-                .processor(new ItemProcessor<Customer, Customer>() {
-                    @Override
-                    public Customer process(Customer item) throws Exception {
-                        log.info("Processing Start Item id={}", item.getId());
-                        Thread.sleep(100);
-                        log.info("Processing End Item id={}", item.getId());
-                        return item;
-                    }
-                })
                 .writer(customerItemWriter())
                 .taskExecutor(taskExecutor())
                 .build();
@@ -79,7 +69,7 @@ public class NotSynchronizedConfiguration {
     @StepScope
     public JdbcCursorItemReader<Customer> customItemReader() {
         return new JdbcCursorItemReaderBuilder<Customer>()
-                .fetchSize(60)
+                .fetchSize(100)
                 .dataSource(dataSource)
                 .rowMapper(new BeanPropertyRowMapper<>(Customer.class))
                 .sql("select id, firstName, lastName, birthdate from customer")
@@ -110,3 +100,4 @@ public class NotSynchronizedConfiguration {
     }
 }
 
+*/

@@ -1,4 +1,3 @@
-/*
 package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
@@ -63,15 +61,6 @@ public class SynchronizedConfiguration {
 
                     }
                 })
-                .processor(new ItemProcessor<Customer, Customer>() {
-                    @Override
-                    public Customer process(Customer item) throws Exception {
-                        log.info("Processing Start Item id={}", item.getId());
-                        Thread.sleep(100);
-                        log.info("Processing End Item id={}", item.getId());
-                        return item;
-                    }
-                })
                 .writer(customerItemWriter())
                 .taskExecutor(taskExecutor())
                 .build();
@@ -116,4 +105,3 @@ public class SynchronizedConfiguration {
     }
 }
 
-*/
