@@ -36,11 +36,15 @@ public class ItemListenerConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<Integer, String>chunk(10)
+                .listener(customChunkListener)
                 .listener(new CustomItemReadListener())
                 .listener(new CustomItemProcessListener())
                 .listener(new CustomItemWriteListener())
                 .reader(listItemReader())
-                .processor((ItemProcessor) item -> "item" + item)
+                .processor((ItemProcessor) item -> {
+                    throw new RuntimeException("failed");
+//                    return "item" + item;
+                })
                 .writer((ItemWriter<String>) items -> {})
                 .build();
     }
