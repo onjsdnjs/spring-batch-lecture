@@ -1,7 +1,5 @@
 package io.springbatch.springbatchlecture;
 
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
