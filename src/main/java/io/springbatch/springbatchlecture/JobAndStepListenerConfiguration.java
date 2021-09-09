@@ -53,8 +53,8 @@ public class JobAndStepListenerConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        throw new RuntimeException("failed");
-//                        return RepeatStatus.FINISHED;
+//                        throw new RuntimeException("failed");
+                        return RepeatStatus.FINISHED;
                     }
                 })
                 .listener(customStepListener)
