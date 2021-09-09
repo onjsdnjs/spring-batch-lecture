@@ -1,6 +1,7 @@
 package io.springbatch.springbatchlecture;
 
 import org.springframework.batch.core.annotation.AfterChunk;
+import org.springframework.batch.core.annotation.AfterChunkError;
 import org.springframework.batch.core.annotation.BeforeChunk;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,13 @@ public class CustomChunkListener {
 
 	@AfterChunk
 	public void afterChunk(ChunkContext context) {
+		System.out.println(">> After the chunk : "+ context.getStepContext().getStepExecution().getStepName());
+		int count = (int)context.getStepContext().getStepExecution().getExecutionContext().get("count");
+		System.out.println(">> count : "+ count);
+	}
+
+	@AfterChunkError
+	public void afterChunkError(ChunkContext context) {
 		System.out.println(">> After the chunk : "+ context.getStepContext().getStepExecution().getStepName());
 		int count = (int)context.getStepContext().getStepExecution().getExecutionContext().get("count");
 		System.out.println(">> count : "+ count);
