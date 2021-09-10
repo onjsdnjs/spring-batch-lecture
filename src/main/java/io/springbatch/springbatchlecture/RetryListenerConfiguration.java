@@ -40,6 +40,7 @@ public class RetryListenerConfiguration {
                 .retry(CustomRetryException.class)
                 .retryLimit(2)
                 .listener(customRetryListener)
+
                 .build();
     }
 
