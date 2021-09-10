@@ -50,7 +50,7 @@ public class SkipListenerConfiguration {
                     public void write(List<? extends String> items) throws Exception {
                         for (String item : items) {
                             if (item.equals("item5")) {
-//                                throw new CustomSkipException("write skipped");
+                                throw new CustomSkipException("write skipped");
                             }
                             System.out.println("write : " + item);
                         }

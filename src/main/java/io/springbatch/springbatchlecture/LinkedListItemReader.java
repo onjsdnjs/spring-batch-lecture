@@ -29,6 +29,7 @@ public class LinkedListItemReader<T> implements ItemReader<T> {
             if ((Integer)remove == 3) {
                 throw new CustomSkipException("read skipped : " + remove);
             }
+            System.out.println("read : " + remove);
             return remove;
         }
         return null;
