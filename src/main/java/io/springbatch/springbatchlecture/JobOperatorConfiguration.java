@@ -26,7 +26,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class SimpleJobConfiguration {
+public class JobOperatorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;

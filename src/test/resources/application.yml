@@ -1,25 +1,27 @@
 spring:
+  batch:
+
   profiles:
     active: mysql
-  batch:
-    job:
-#      enabled: false
-      names: ${job.name:NONE}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
 
 ---
 spring:
   config:
-    activate:
-      on-profile: local
+      activate:
+        on-profile: local
   datasource:
     hikari:
       jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
       username: sa
       password:
       driver-class-name: org.h2.Driver
-  batch:
-    jdbc:
-      initialize-schema: embedded
 
 ---
 spring:
@@ -33,5 +35,8 @@ spring:
       password: pass
       driver-class-name: com.mysql.jdbc.Driver
   batch:
+    job:
+      names: ${job.name:NONE}
+      enabled: true
     jdbc:
       initialize-schema: always

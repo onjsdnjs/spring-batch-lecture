@@ -17,7 +17,7 @@ import java.util.List;
 
 @SpringBatchTest
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes={SimpleJobConfiguration.class, TestBatchConfig.class})
+@SpringBootTest(classes={JobOperatorConfiguration.class, TestBatchConfig.class})
 public class SimpleJobTest {
 
     @Autowired
