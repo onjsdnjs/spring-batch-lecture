@@ -38,7 +38,7 @@ public class RetryListenerConfiguration {
                 .writer(new CustomItemWriter())
                 .faultTolerant()
                 .retry(CustomRetryException.class)
-                .retryLimit(3)
+                .retryLimit(2)
                 .listener(customRetryListener)
                 .build();
     }
