@@ -54,7 +54,7 @@ public class SimpleJobConfiguration {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
-        reader.setFetchSize(300);
+        reader.setPageSize(100);
         reader.setRowMapper(new CustomerRowMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
