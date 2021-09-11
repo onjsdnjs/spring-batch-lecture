@@ -1,0 +1,15 @@
+### Send POST request with json body
+POST http://localhost:8080/batch/start
+Content-Type: application/json
+
+{
+  "id": "leaven"
+}
+
+### Send POST request with json body
+POST http://localhost:8080/batch/stop
+Content-Type: application/json
+
+### Send POST request with json body
+POST http://localhost:8080/batch/restart
+Content-Type: application/json

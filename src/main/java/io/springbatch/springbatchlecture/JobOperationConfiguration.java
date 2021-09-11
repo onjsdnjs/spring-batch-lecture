@@ -28,7 +28,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobRegistryConfiguration {
+public class JobOperationConfiguration {
 
     public final JobBuilderFactory jobBuilderFactory;
     public final StepBuilderFactory stepBuilderFactory;
@@ -39,17 +39,8 @@ public class JobRegistryConfiguration {
         return stepBuilderFactory.get("step1")
                 .tasklet((contribution, chunkContext) ->
                         {
-                            SimpleJob job = null;
-                            for(Iterator<String> iterator = jobRegistry.getJobNames().iterator(); iterator.hasNext();){
-                                job = (SimpleJob)jobRegistry.getJob(iterator.next());
-                                System.out.println("job name: " + job.getName());
-
-                                for(Iterator<String> iterator2 = job.getStepNames().iterator(); iterator2.hasNext();) {
-                                    Step step = job.getStep(iterator2.next());
-                                    System.out.println("step name: " + step.getName());
-
-                                }
-                            }
+                            System.out.println("step1 was executed");
+                            Thread.sleep(5000);
                             return RepeatStatus.FINISHED;
                         }
                 )
@@ -57,8 +48,14 @@ public class JobRegistryConfiguration {
     }
     @Bean
     public Step step2() throws Exception {
-        return stepBuilderFactory.get("step")
-                .tasklet((contribution, chunkContext) -> RepeatStatus.FINISHED)
+        return stepBuilderFactory.get("step2")
+                .tasklet((contribution, chunkContext) ->
+                        {
+                            System.out.println("step2 was executed");
+                            Thread.sleep(5000);
+                            return RepeatStatus.FINISHED;
+                        }
+                )
                 .build();
     }
     @Bean
