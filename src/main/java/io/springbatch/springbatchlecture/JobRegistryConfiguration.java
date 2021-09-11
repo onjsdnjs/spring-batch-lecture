@@ -63,7 +63,7 @@ public class JobRegistryConfiguration {
     }
     @Bean
     public Job job1() throws Exception {
-        return jobBuilderFactory.get("job1")
+        return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
