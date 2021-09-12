@@ -16,7 +16,6 @@ public class ApiService3 extends AbstractApiService{
 
         int statusCodeValue = response.getStatusCodeValue();
         ApiResponseVO apiResponseVO = new ApiResponseVO(statusCodeValue + "", response.getBody());
-
         return apiResponseVO;
     }
 }
