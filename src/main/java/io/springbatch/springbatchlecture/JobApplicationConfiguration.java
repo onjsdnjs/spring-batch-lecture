@@ -28,7 +28,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobOperationConfiguration {
+public class JobApplicationConfiguration {
 
     public final JobBuilderFactory jobBuilderFactory;
     public final StepBuilderFactory stepBuilderFactory;
