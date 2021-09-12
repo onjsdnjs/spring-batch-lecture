@@ -24,27 +24,27 @@ public class SendJobConfiguration {
     @Bean
     public Job apiJob() throws Exception {
 
-        return jobBuilderFactory.get("batchJob")
+        return jobBuilderFactory.get("apiJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
+                .start(apiStep1())
                 .on("FAILED").end()
-                .from(step1()).on("*").to(jobStep)
+                .from(apiStep1()).on("*").to(jobStep)
                 .from(jobStep).on("FAILED").end()
-                .next(step2())
+                .next(apiStep2())
                 .end()
                 .build();
     }
 
     @Bean
-    public Step step1() throws Exception {
-        return stepBuilderFactory.get("step1")
+    public Step apiStep1() throws Exception {
+        return stepBuilderFactory.get("apiStep")
                 .tasklet(apiStartTasklet)
                 .build();
     }
 
     @Bean
-    public Step step2() throws Exception {
-        return stepBuilderFactory.get("step2")
+    public Step apiStep2() throws Exception {
+        return stepBuilderFactory.get("apiStep2")
                 .tasklet(apiEndTasklet)
                 .build();
     }
