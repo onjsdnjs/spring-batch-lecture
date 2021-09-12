@@ -6,9 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class ApiRequestVO {
-    private String url;
-    private String ContentType;
-    private String HttpMethod;
+
+    private long id;
     private ProductVO productVO;
 
 }

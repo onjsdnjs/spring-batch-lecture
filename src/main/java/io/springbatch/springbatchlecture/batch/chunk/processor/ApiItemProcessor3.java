@@ -12,9 +12,7 @@ public class ApiItemProcessor3 implements ItemProcessor<ProductVO, ApiRequestVO>
     public ApiRequestVO process(ProductVO productVO) throws Exception {
 
         return ApiRequestVO.builder()
-                .url("http://localhost:8080/api/product/3")
-                .ContentType("application/json")
-                .HttpMethod("POST")
+                .id(productVO.getId())
                 .productVO(productVO)
                 .build();
     }
