@@ -4,20 +4,28 @@ import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor1
 import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor2;
 import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor3;
 import io.springbatch.springbatchlecture.batch.chunk.processor.ProcessorClassifier;
-import io.springbatch.springbatchlecture.batch.chunk.writer.SendApiItemWriter;
+import io.springbatch.springbatchlecture.batch.chunk.writer.ApiItemWriter1;
+import io.springbatch.springbatchlecture.batch.chunk.writer.ApiItemWriter2;
+import io.springbatch.springbatchlecture.batch.chunk.writer.ApiItemWriter3;
+import io.springbatch.springbatchlecture.batch.chunk.writer.WriterClassifier;
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
 import io.springbatch.springbatchlecture.batch.partition.ProductPartitioner;
+import io.springbatch.springbatchlecture.service.ApiService1;
+import io.springbatch.springbatchlecture.service.ApiService2;
+import io.springbatch.springbatchlecture.service.ApiService3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
+import org.springframework.batch.item.support.ClassifierCompositeItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +43,7 @@ public class ApiStepConfiguration {
 
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
-    private final SendApiItemWriter sendApiItemWriter;
+    private final ApiItemWriter1 apiItemWriter1;
 
     private int chunkSize = 10;
 
@@ -69,7 +77,7 @@ public class ApiStepConfiguration {
                 .<ProductVO, ProductVO>chunk(chunkSize)
                 .reader(itemReader(null))
                 .processor(itemProcessor())
-                .writer(sendApiItemWriter)
+                .writer(itemWriter())
                 .build();
     }
 
@@ -123,5 +131,24 @@ public class ApiStepConfiguration {
         processor.setClassifier(classifier);
 
         return processor;
+    }
+
+    @Bean
+    public ItemWriter itemWriter() {
+
+        ClassifierCompositeItemWriter<ApiRequestVO> writer = new ClassifierCompositeItemWriter<>();
+
+        WriterClassifier<ApiRequestVO, ItemWriter<? super ApiRequestVO>> classifier = new WriterClassifier();
+
+        Map<String, ItemWriter<ApiRequestVO>> writerMap = new HashMap<>();
+        writerMap.put("1", new ApiItemWriter1(new ApiService1()));
+        writerMap.put("2", new ApiItemWriter2(new ApiService2()));
+        writerMap.put("3", new ApiItemWriter3(new ApiService3()));
+
+        classifier.setWriterMap(writerMap);
+
+        writer.setClassifier(classifier);
+
+        return writer;
     }
 }

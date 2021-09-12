@@ -1,20 +1,20 @@
 package io.springbatch.springbatchlecture.batch.chunk.writer;
 
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
-import io.springbatch.springbatchlecture.service.ApiService;
+import io.springbatch.springbatchlecture.service.AbstractApiService;
+import io.springbatch.springbatchlecture.service.ApiService1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 @Slf4j
-public class SendApiItemWriter implements ItemWriter<ApiRequestVO> {
+public class ApiItemWriter1 implements ItemWriter<ApiRequestVO> {
 
-    private final ApiService apiService;
+    private AbstractApiService apiService;
 
-    public SendApiItemWriter(ApiService apiService) {
+    public ApiItemWriter1(AbstractApiService apiService) {
         this.apiService = apiService;
     }
 
