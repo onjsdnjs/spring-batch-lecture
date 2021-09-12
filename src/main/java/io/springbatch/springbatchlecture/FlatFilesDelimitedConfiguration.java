@@ -12,6 +12,7 @@ import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +35,7 @@ public class FlatFilesDelimitedConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<String,String>chunk(10)
+                .<String,String>chunk(1)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
