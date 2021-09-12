@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiResponseVO {
+public class ApiResponseVO{
     private String status;
     private String msg;
 }

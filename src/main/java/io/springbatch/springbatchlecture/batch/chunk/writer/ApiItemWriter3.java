@@ -4,12 +4,16 @@ import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.domain.ApiResponseVO;
 import io.springbatch.springbatchlecture.service.AbstractApiService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.List;
 
 @Slf4j
-public class ApiItemWriter3 implements ItemWriter<ApiRequestVO> {
+public class ApiItemWriter3 extends FlatFileItemWriter<ApiRequestVO> {
 
     private AbstractApiService apiService;
 
@@ -26,5 +30,13 @@ public class ApiItemWriter3 implements ItemWriter<ApiRequestVO> {
 
         ApiResponseVO response = apiService.service(items);
         System.out.println("response = " + response);
+
+        items.forEach(item -> item.setApiResponseVO(response));
+
+        super.setResource(new FileSystemResource("C:\\jsw\\inflearn\\spring-batch-lecture\\src\\main\\resources\\product3.txt"));
+        super.open(new ExecutionContext());
+        super.setLineAggregator(new DelimitedLineAggregator<>());
+        super.setAppendAllowed(true);
+        super.write(items);
     }
 }
