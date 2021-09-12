@@ -14,5 +14,4 @@ import java.util.List;
 public class ApiResponseVO {
     private String status;
     private String msg;
-    private List<String> commonSendNo;
 }

@@ -1,6 +1,8 @@
 package io.springbatch.springbatchlecture.service;
 
+import io.springbatch.springbatchlecture.batch.domain.ApiInfo;
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
+import io.springbatch.springbatchlecture.batch.domain.ApiResponseVO;
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public abstract class AbstractApiService {
-    public void service(List<? extends ApiRequestVO> apiRequest) {
+    public ApiResponseVO service(List<? extends ApiRequestVO> apiRequest) {
 
         // 중계사업자와 API 연동 작업
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
@@ -38,11 +40,12 @@ public abstract class AbstractApiService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<List<? extends ApiRequestVO>> reqEntity = new HttpEntity<>(apiRequest, headers);
+        ApiInfo apiInfo = ApiInfo.builder().apiRequestList(apiRequest).build();
+        HttpEntity<ApiInfo> reqEntity = new HttpEntity<>(apiInfo, headers);
 
-        doApiService(restTemplate, reqEntity);
+        return doApiService(restTemplate, apiInfo);
 
     }
 
-    protected abstract void doApiService(RestTemplate restTemplate, HttpEntity<List<? extends ApiRequestVO>> reqEntity);
+    protected abstract ApiResponseVO doApiService(RestTemplate restTemplate, ApiInfo apiInfo);
 }

@@ -1,6 +1,7 @@
 package io.springbatch.springbatchlecture.batch.chunk.writer;
 
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
+import io.springbatch.springbatchlecture.batch.domain.ApiResponseVO;
 import io.springbatch.springbatchlecture.service.AbstractApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
@@ -23,6 +24,7 @@ public class ApiItemWriter2 implements ItemWriter<ApiRequestVO> {
         items.forEach(item -> System.out.println("items = " + item));
         System.out.println("----------------------------------");
 
-        apiService.service(items);
+        ApiResponseVO response = apiService.service(items);
+        System.out.println("response = " + response);
     }
 }

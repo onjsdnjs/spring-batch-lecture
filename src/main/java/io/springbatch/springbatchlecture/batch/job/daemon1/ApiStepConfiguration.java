@@ -12,6 +12,8 @@ import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
 import io.springbatch.springbatchlecture.batch.partition.ProductPartitioner;
 import io.springbatch.springbatchlecture.service.ApiService1;
+import io.springbatch.springbatchlecture.service.ApiService2;
+import io.springbatch.springbatchlecture.service.ApiService3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;

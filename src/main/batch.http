@@ -13,3 +13,7 @@ Content-Type: application/json
 ### Send POST request with json body
 POST http://localhost:8080/batch/restart
 Content-Type: application/json
+
+### Send POST request with json body
+POST http://localhost:8081/api/product/1
+Content-Type: application/json
