@@ -1,7 +1,7 @@
 package io.springbatch.springbatchlecture.batch.chunk.writer;
 
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
-import lombok.RequiredArgsConstructor;
+import io.springbatch.springbatchlecture.service.ApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
@@ -23,11 +23,14 @@ import java.util.List;
  **/
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class SendApiItemWriter implements ItemWriter<ApiRequestVO> {
 
-//    private final BeanObjectFactory serviceBeanFactory;
+    private final ApiService apiService;
+
+    public SendApiItemWriter(ApiService apiService) {
+        this.apiService = apiService;
+    }
 
     @Override
     public void write(List<? extends ApiRequestVO> items) throws Exception {
@@ -42,9 +45,7 @@ public class SendApiItemWriter implements ItemWriter<ApiRequestVO> {
         System.out.println("----------------------------------");
         System.out.println("");
 
-//        AbstractDataService<List<? extends ApiRequestVO>> service = serviceBeanFactory.getService(Constants.TASK_CD.TASK_DATA_SND);
-        // 발송 완료 response 가지고 옴
-//        service.service(items);
+        apiService.service(items);
 
 
     }

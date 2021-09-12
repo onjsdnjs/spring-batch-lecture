@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture.batch.listener.job;
+package io.springbatch.springbatchlecture.batch.listener;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -16,7 +16,7 @@ import org.springframework.batch.core.JobExecutionListener;
  * @see :
  **/
 
-public class DataSendChildJobListener implements JobExecutionListener {
+public class JobListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {

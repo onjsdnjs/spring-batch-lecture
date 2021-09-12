@@ -2,10 +2,8 @@ package io.springbatch.springbatchlecture.batch.job.daemon1;
 
 import io.springbatch.springbatchlecture.batch.chunk.processor.SendApiItemProcessor;
 import io.springbatch.springbatchlecture.batch.chunk.writer.SendApiItemWriter;
-import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
 import io.springbatch.springbatchlecture.batch.partition.ProductPartitioner;
-import io.springbatch.springbatchlecture.batch.rowmapper.MessagingApiMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -17,7 +15,9 @@ import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class SendApiSteps {
+public class ApiStepConfiguration {
 
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
@@ -50,21 +50,31 @@ public class SendApiSteps {
     @Bean
     public Step apiMasterStep() throws Exception {
 
-        ProductVO[] itemList = QueryGenerator.getProductList(dataSource);
+        ProductVO[] productList = QueryGenerator.getProductList(dataSource);
 
         return stepBuilderFactory.get("apiMasterStep")
                 .partitioner(apiSlaveStep().getName(), partitioner())
                 .step(apiSlaveStep())
-                .gridSize(itemList.length)
-                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .gridSize(productList.length)
+                .taskExecutor(taskExecutor())
                 .build();
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor(){
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(3);
+        taskExecutor.setMaxPoolSize(6);
+        taskExecutor.setThreadNamePrefix("api-thread-");
+
+        return taskExecutor;
     }
 
     @Bean
     public Step apiSlaveStep() throws Exception {
 
         return stepBuilderFactory.get("apiSlaveStep")
-                .<ApiRequestVO, ApiRequestVO>chunk(chunkSize)
+                .<ProductVO, ProductVO>chunk(chunkSize)
                 .reader(itemReader(null))
                 .processor(sendApiItemProcessor)
                 .writer(sendApiItemWriter)
@@ -80,17 +90,17 @@ public class SendApiSteps {
 
     @Bean
     @StepScope
-    public ItemReader<ApiRequestVO> itemReader(@Value("#{stepExecutionContext['product']}") ProductVO productVO) throws Exception {
+    public ItemReader<ProductVO> itemReader(@Value("#{stepExecutionContext['product']}") ProductVO productVO) throws Exception {
 
-        JdbcPagingItemReader<ApiRequestVO> reader = new JdbcPagingItemReader<>();
+        JdbcPagingItemReader<ProductVO> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(dataSource);
         reader.setPageSize(chunkSize);
-        reader.setRowMapper(new MessagingApiMapper());
+        reader.setRowMapper(new BeanPropertyRowMapper(ProductVO.class));
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
         queryProvider.setSelectClause("id, name, price, type");
-        queryProvider.setFromClause("from item");
+        queryProvider.setFromClause("from product");
         queryProvider.setWhereClause("where type = :type");
 
         Map<String, Order> sortKeys = new HashMap<>(1);

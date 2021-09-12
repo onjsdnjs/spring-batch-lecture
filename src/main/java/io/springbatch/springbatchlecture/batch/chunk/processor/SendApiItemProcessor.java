@@ -1,6 +1,7 @@
 package io.springbatch.springbatchlecture.batch.chunk.processor;
 
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
+import io.springbatch.springbatchlecture.batch.domain.ProductVO;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +19,12 @@ import org.springframework.stereotype.Component;
  **/
 
 @Component
-public class SendApiItemProcessor implements ItemProcessor<ApiRequestVO, ApiRequestVO> {
+public class SendApiItemProcessor implements ItemProcessor<ProductVO, ApiRequestVO> {
 
     @Override
-    public ApiRequestVO process(ApiRequestVO item) throws Exception {
+    public ApiRequestVO process(ProductVO item) throws Exception {
         System.out.println(">> 8.SendApiItemProcessor : item = " + item);
         // Business Logic
-        return item;
+        return new ApiRequestVO();
     }
 }

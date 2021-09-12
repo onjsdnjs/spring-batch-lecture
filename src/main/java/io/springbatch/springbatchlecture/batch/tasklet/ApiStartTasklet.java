@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture.batch.tasklet.send;
+package io.springbatch.springbatchlecture.batch.tasklet;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -9,20 +9,20 @@ import org.springframework.stereotype.Component;
 
 /**
  * <pre>
- * io.anymobi.core.batch.tasklet.send
- * ㄴ SendDataPreTasklet.java
+ * io.anymobi.core.batch.tasklet
+ * ㄴ ServiceStartTasklet.java
  * </pre>
- * Data 를 전송하는 역할을 맡은 SendDataTasklet 실행 후에 호출되는 Tasklet 클래스
+ * 서비스가 시작 되는 시점에 실행 되어야 할 로직을 담는 클래스
  *
  * @author : soowon.jung
  * @version : 1.0.0
- * @date : 2021-07-22 오후 1:44
+ * @date : 2021-07-22 오후 1:49
  * @see :
  **/
 
 @Component
 @RequiredArgsConstructor
-public class SendDataPreTasklet implements Tasklet {
+public class ApiStartTasklet implements Tasklet {
 
 //    private final BeanObjectFactory serviceBeanFactory;
 
@@ -30,11 +30,14 @@ public class SendDataPreTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         System.out.println("");
-        System.out.println(">> 4. SendDataPreTasklet is started");
+        System.out.println(">> 3. BeforeTasklet is started");
         System.out.println("");
+//        AbstractDataService service = serviceBeanFactory.getService(Constants.TASK_CD.TASK_DATA_SND);
 
-//        AbstractDataService<List<? extends ApiRequestVO>> service = serviceBeanFactory.getService(Constants.TASK_CD.TASK_DATA_SND);
-//        service.preExecute(service.getServiceVO());
+//        boolean isOk = service.beforeExecute();
+//        if (!isOk) {
+//            contribution.setExitStatus(ExitStatus.FAILED);
+//        }
 
         return RepeatStatus.FINISHED;
     }

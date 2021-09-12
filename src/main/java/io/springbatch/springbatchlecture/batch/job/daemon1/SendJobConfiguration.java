@@ -1,9 +1,9 @@
 package io.springbatch.springbatchlecture.batch.job.daemon1;
 
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
-import io.springbatch.springbatchlecture.batch.tasklet.ServiceEndTasklet;
-import io.springbatch.springbatchlecture.batch.tasklet.ServiceStartTasklet;
-import io.springbatch.springbatchlecture.service.SendDataService;
+import io.springbatch.springbatchlecture.batch.tasklet.ApiEndTasklet;
+import io.springbatch.springbatchlecture.batch.tasklet.ApiStartTasklet;
+import io.springbatch.springbatchlecture.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -35,16 +35,14 @@ public class SendJobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final ServiceStartTasklet serviceStartTasklet;
-    private final ServiceEndTasklet serviceEndTasklet;
+    private final ApiStartTasklet apiStartTasklet;
+    private final ApiEndTasklet apiEndTasklet;
     private final Step jobStep;
-    private final SendDataService<List<? extends ApiRequestVO>> dataSenderService;
 
     @Bean
-    @Qualifier("sendDataJob")
-    public Job dataSendJob() throws Exception {
+    public Job apiJob() throws Exception {
 
-        return jobBuilderFactory.get("dataSendJob")
+        return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .on("FAILED").end()
@@ -58,14 +56,14 @@ public class SendJobConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .tasklet(serviceStartTasklet)
+                .tasklet(apiStartTasklet)
                 .build();
     }
 
     @Bean
     public Step step2() throws Exception {
         return stepBuilderFactory.get("step2")
-                .tasklet(serviceEndTasklet)
+                .tasklet(apiEndTasklet)
                 .build();
     }
 }

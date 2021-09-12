@@ -33,10 +33,6 @@ public class SendChildJobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final SendDataTasklet sendDataTasklet;
-    private final SendDataPreTasklet sendDataPreTasklet;
-    private final SendDataPostTasklet sendDataPostTasklet;
-    private final StepExecutionListener dataSendStepListener;
     private final Step apiMasterStep;
     private final JobLauncher jobLauncher;
 
@@ -51,36 +47,7 @@ public class SendChildJobConfiguration {
     @Bean
     public Job childJob() throws Exception {
         return jobBuilderFactory.get("childJob")
-                .incrementer(new RunIdIncrementer())
-//                .listener(new DataSendChildJobListener(sharedObject))
-                .start(childStep1())
-                .next(childStep2())
-                .next(apiMasterStep)
-                .next(childStep3())
+                .start(apiMasterStep)
                 .build();
     }
-
-    @Bean
-    public Step childStep1() throws Exception {
-        return stepBuilderFactory.get("childStep1")
-                .tasklet(sendDataPreTasklet)
-                .build();
-    }
-
-    @Bean
-    public Step childStep2() throws Exception {
-        return stepBuilderFactory.get("childStep2")
-                .tasklet(sendDataTasklet)
-                .listener(dataSendStepListener)
-                .build();
-    }
-
-    @Bean
-    public Step childStep3() throws Exception {
-        return stepBuilderFactory.get("childStep3")
-                .tasklet(sendDataPostTasklet)
-                .build();
-    }
-
-
 }
