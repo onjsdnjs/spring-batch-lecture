@@ -1,10 +1,10 @@
-package io.springbatch.springbatchlecture.batch.job.send;
+package io.springbatch.springbatchlecture.batch.job.daemon1;
 
 import io.springbatch.springbatchlecture.batch.chunk.processor.SendApiItemProcessor;
 import io.springbatch.springbatchlecture.batch.chunk.writer.SendApiItemWriter;
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
-import io.springbatch.springbatchlecture.batch.domain.MessageVO;
-import io.springbatch.springbatchlecture.batch.partition.MessagePartitioner;
+import io.springbatch.springbatchlecture.batch.domain.ProductVO;
+import io.springbatch.springbatchlecture.batch.partition.ProductPartitioner;
 import io.springbatch.springbatchlecture.batch.rowmapper.MessagingApiMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -41,22 +41,21 @@ import java.util.Map;
 public class SendApiSteps {
 
     private final StepBuilderFactory stepBuilderFactory;
-    private final DataSource primaryDataSource;
+    private final DataSource dataSource;
     private final SendApiItemProcessor sendApiItemProcessor;
     private final SendApiItemWriter sendApiItemWriter;
 
-    @Value("${batch.chunkSize}")
-    private int chunkSize;
+    private int chunkSize = 10;
 
     @Bean
     public Step apiMasterStep() throws Exception {
 
-        MessageVO[] msgList = QueryGenerator.getMsgList(primaryDataSource);
+        ProductVO[] itemList = QueryGenerator.getProductList(dataSource);
 
         return stepBuilderFactory.get("apiMasterStep")
                 .partitioner(apiSlaveStep().getName(), partitioner())
                 .step(apiSlaveStep())
-                .gridSize(msgList.length)
+                .gridSize(itemList.length)
                 .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
@@ -66,44 +65,39 @@ public class SendApiSteps {
 
         return stepBuilderFactory.get("apiSlaveStep")
                 .<ApiRequestVO, ApiRequestVO>chunk(chunkSize)
-                .reader(sendApiItemReader(null))
+                .reader(itemReader(null))
                 .processor(sendApiItemProcessor)
                 .writer(sendApiItemWriter)
                 .build();
     }
 
     @Bean
-    public MessagePartitioner partitioner() {
-        MessagePartitioner messagePartitioner = new MessagePartitioner();
-        messagePartitioner.setDataSource(primaryDataSource);
-        return messagePartitioner;
+    public ProductPartitioner partitioner() {
+        ProductPartitioner productPartitioner = new ProductPartitioner();
+        productPartitioner.setDataSource(dataSource);
+        return productPartitioner;
     }
 
     @Bean
     @StepScope
-    public ItemReader<ApiRequestVO> sendApiItemReader(@Value("#{stepExecutionContext['msg']}") MessageVO messageVO) throws Exception {
+    public ItemReader<ApiRequestVO> itemReader(@Value("#{stepExecutionContext['product']}") ProductVO productVO) throws Exception {
 
         JdbcPagingItemReader<ApiRequestVO> reader = new JdbcPagingItemReader<>();
 
-        reader.setDataSource(primaryDataSource);
-        reader.setFetchSize(chunkSize);
+        reader.setDataSource(dataSource);
         reader.setPageSize(chunkSize);
         reader.setRowMapper(new MessagingApiMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause(QueryGenerator.getSelectQueryForTarget());
-        queryProvider.setFromClause(QueryGenerator.getFromQueryForTarget());
-        queryProvider.setWhereClause(QueryGenerator.getWhereQueryForTarget());
+        queryProvider.setSelectClause("id, name, price, type");
+        queryProvider.setFromClause("from item");
+        queryProvider.setWhereClause("where type = :type");
 
         Map<String, Order> sortKeys = new HashMap<>(1);
-//        sortKeys.put("IF_YMD", Order.ASCENDING);
-        sortKeys.put("ID", Order.DESCENDING);
-//        sortKeys.put("IF_SEQ", Order.ASCENDING);
+        sortKeys.put("id", Order.DESCENDING);
         queryProvider.setSortKeys(sortKeys);
-//        reader.setQueryProvider(queryProvider);
 
-//        reader.setParameterValues(QueryGenerator.getParameterForQuery("msg_seq", msgSeq));
-        reader.setParameterValues(QueryGenerator.getParameterForQuery("str", messageVO.getMessageTemplateName()));
+        reader.setParameterValues(QueryGenerator.getParameterForQuery("type", productVO.getType()));
         reader.setQueryProvider(queryProvider);
         reader.afterPropertiesSet();
 

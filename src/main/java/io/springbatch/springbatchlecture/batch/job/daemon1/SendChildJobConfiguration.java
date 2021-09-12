@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture.batch.job.send;
+package io.springbatch.springbatchlecture.batch.job.daemon1;
 
 import io.springbatch.springbatchlecture.batch.tasklet.send.SendDataPostTasklet;
 import io.springbatch.springbatchlecture.batch.tasklet.send.SendDataPreTasklet;

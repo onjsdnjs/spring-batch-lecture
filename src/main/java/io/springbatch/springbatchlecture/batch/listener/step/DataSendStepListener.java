@@ -1,6 +1,6 @@
 package io.springbatch.springbatchlecture.batch.listener.step;
 
-import lombok.RequiredArgsConstructor;
+import io.springbatch.springbatchlecture.service.SendDataService;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -20,10 +20,13 @@ import org.springframework.stereotype.Component;
  **/
 
 @Component
-@RequiredArgsConstructor
 public class DataSendStepListener implements StepExecutionListener {
 
-//    private final BeanObjectFactory serviceBeanFactory;
+    private final SendDataService sendDataService;
+
+    public DataSendStepListener(SendDataService sendDataService) {
+        this.sendDataService = sendDataService;
+    }
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -32,10 +35,6 @@ public class DataSendStepListener implements StepExecutionListener {
         System.out.println(">> 6.SendDataListener is started");
         System.out.println("");
 
-//        AbstractDataService<List<? extends ApiRequestVO>> service = serviceBeanFactory.getService(Constants.TASK_CD.TASK_DATA_SND);
-
-//        boolean checkRun = service.beforeExecute();
-//        if (!checkRun) throw new IllegalStateException("SendData can not run");
     }
 
     @Override

@@ -1,8 +1,8 @@
 
 package io.springbatch.springbatchlecture.batch.partition;
 
-import io.springbatch.springbatchlecture.batch.domain.MessageVO;
-import io.springbatch.springbatchlecture.batch.job.send.QueryGenerator;
+import io.springbatch.springbatchlecture.batch.domain.ProductVO;
+import io.springbatch.springbatchlecture.batch.job.daemon1.QueryGenerator;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 
@@ -10,27 +10,27 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessagePartitioner implements Partitioner {
+public class ProductPartitioner implements Partitioner {
 
-	private DataSource primaryDataSource;
+	private DataSource dataSource;
 
 	public void setDataSource(DataSource dataSource) {
-		this.primaryDataSource = dataSource;
+		this.dataSource = dataSource;
 	}
 
 	@Override
 	public Map<String, ExecutionContext> partition(int gridSize) {
 
-		MessageVO[] msgList = QueryGenerator.getMsgList(primaryDataSource);
+		ProductVO[] productList = QueryGenerator.getProductList(dataSource);
 		Map<String, ExecutionContext> result = new HashMap<String, ExecutionContext>();
 		int number = 0;
 
-		for (int i = 0; i < msgList.length; i++) {
+		for (int i = 0; i < productList.length; i++) {
 
 			ExecutionContext value = new ExecutionContext();
 
 			result.put("partition" + number, value);
-			value.put("msg", msgList[i]);
+			value.put("product", productList[i]);
 
 			number++;
 		}

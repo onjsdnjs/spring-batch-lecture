@@ -1,8 +1,5 @@
 package io.springbatch.springbatchlecture.batch.listener.job;
 
-import io.springbatch.springbatchlecture.batch.domain.Constants;
-import io.springbatch.springbatchlecture.batch.domain.MessageVO;
-import io.springbatch.springbatchlecture.batch.domain.SharedObject;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
@@ -21,11 +18,6 @@ import org.springframework.batch.core.JobExecutionListener;
 
 public class DataSendChildJobListener implements JobExecutionListener {
 
-    private SharedObject sharedObject;
-    public DataSendChildJobListener(SharedObject sharedObject) {
-        this.sharedObject = sharedObject;
-    }
-
     @Override
     public void beforeJob(JobExecution jobExecution) {
 
@@ -37,10 +29,6 @@ public class DataSendChildJobListener implements JobExecutionListener {
         System.out.println(">> 2-1. DataSendChildJobListener is started");
         System.out.println("");
 
-        MessageVO[] msgList = (MessageVO[]) this.sharedObject.getSharedObject(Constants.MSG.MSG_CD);
-        for (int i = 0; i < msgList.length; i++) {
-            jobExecution.getExecutionContext().put(String.valueOf(i), msgList[i]);
-        }
     }
 
     @Override

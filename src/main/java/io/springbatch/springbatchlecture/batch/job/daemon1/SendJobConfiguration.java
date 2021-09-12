@@ -1,11 +1,9 @@
-package io.springbatch.springbatchlecture.batch.job.send;
+package io.springbatch.springbatchlecture.batch.job.daemon1;
 
-import io.anymobi.batch.listener.job.DataSendJobListener;
-import io.anymobi.batch.tasklet.ServiceEndTasklet;
-import io.anymobi.batch.tasklet.ServiceStartTasklet;
-import io.anymobi.domain.vo.ApiRequestVO;
-import io.anymobi.domain.vo.SharedObject;
-import io.anymobi.service.data.SendDataService;
+import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
+import io.springbatch.springbatchlecture.batch.tasklet.ServiceEndTasklet;
+import io.springbatch.springbatchlecture.batch.tasklet.ServiceStartTasklet;
+import io.springbatch.springbatchlecture.service.SendDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -41,7 +39,6 @@ public class SendJobConfiguration {
     private final ServiceEndTasklet serviceEndTasklet;
     private final Step jobStep;
     private final SendDataService<List<? extends ApiRequestVO>> dataSenderService;
-    private final SharedObject sharedObject;
 
     @Bean
     @Qualifier("sendDataJob")
@@ -49,7 +46,6 @@ public class SendJobConfiguration {
 
         return jobBuilderFactory.get("dataSendJob")
                 .incrementer(new RunIdIncrementer())
-                .listener(new DataSendJobListener(sharedObject, dataSenderService))
                 .start(step1())
                 .on("FAILED").end()
                 .from(step1()).on("*").to(jobStep)
