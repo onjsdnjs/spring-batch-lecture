@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public abstract class AbstractApiService {
+
     public ApiResponseVO service(List<? extends ApiRequestVO> apiRequest) {
 
         // 중계사업자와 API 연동 작업
