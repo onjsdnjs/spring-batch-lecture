@@ -54,7 +54,7 @@ public class FileJobConfiguration {
     @Bean
     public Step fileStep1() {
         return stepBuilderFactory.get("fileStep1")
-                .<ProductVO, Product>chunk(3)
+                .<ProductVO, Product>chunk(10)
                 .reader(fileItemReader())
                 .processor(fileItemProcessor())
                 .writer(fileItemWriter())
@@ -65,7 +65,7 @@ public class FileJobConfiguration {
     public FlatFileItemReader<ProductVO> fileItemReader() {
         return new FlatFileItemReaderBuilder<ProductVO>()
                 .name("flatFile")
-                .resource(new ClassPathResource("customer.csv"))
+                .resource(new ClassPathResource("product.csv"))
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
                 .targetType(ProductVO.class)
                 .linesToSkip(1)
