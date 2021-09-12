@@ -1,6 +1,9 @@
 package io.springbatch.springbatchlecture.batch.job.daemon1;
 
-import io.springbatch.springbatchlecture.batch.chunk.processor.*;
+import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor1;
+import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor2;
+import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor3;
+import io.springbatch.springbatchlecture.batch.chunk.processor.ProcessorClassifier;
 import io.springbatch.springbatchlecture.batch.chunk.writer.SendApiItemWriter;
 import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
@@ -25,19 +28,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-
-/**
- * <pre>
- * io.anymobi.core.batch.job.send
- * ㄴ SendDataChildJobConfiguration.java
- * </pre>
- * Api 연동을 위한 Step 객체 생성
- *
- * @author : soowon.jung
- * @version : 1.0.0
- * @date : 2021-07-22 오후 1:34
- * @see :
- **/
 
 @Configuration
 @RequiredArgsConstructor

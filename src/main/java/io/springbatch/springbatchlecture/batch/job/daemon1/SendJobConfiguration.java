@@ -1,33 +1,15 @@
 package io.springbatch.springbatchlecture.batch.job.daemon1;
 
-import io.springbatch.springbatchlecture.batch.domain.ApiRequestVO;
 import io.springbatch.springbatchlecture.batch.tasklet.ApiEndTasklet;
 import io.springbatch.springbatchlecture.batch.tasklet.ApiStartTasklet;
-import io.springbatch.springbatchlecture.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
-
-/**
- * <pre>
- * io.anymobi.core.batch.job.send
- * ㄴ SendDataJobConfiguration.java
- * </pre>
- * 배치 Job 을 구성하는 클래스로서 각 단계별로 로직을 수행하도록 구성되어 있음
- *
- * @author : soowon.jung
- * @version : 1.0.0
- * @date : 2021-07-22 오후 1:30
- * @see :
- **/
 
 @Configuration
 @RequiredArgsConstructor

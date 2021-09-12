@@ -11,19 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <pre>
- * io.anymobi.core.batch.job.send
- * ㄴ SendDataChildJobConfiguration.java
- * </pre>
- * 쿼리 생성 클래스
- *
- * @author : soowon.jung
- * @version : 1.0.0
- * @date : 2021-07-22 오후 1:34
- * @see :
- **/
-
 public class QueryGenerator {
 
     public static ProductVO[] getProductList(DataSource dataSource) {
