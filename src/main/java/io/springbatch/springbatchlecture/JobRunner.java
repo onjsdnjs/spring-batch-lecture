@@ -26,7 +26,7 @@ public class JobRunner implements ApplicationRunner {
 
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
 
-        jobLauncher.run(fileJob, jobParameters);
+//        jobLauncher.run(fileJob, jobParameters);
         jobLauncher.run(apiJob, jobParameters);
 
     }

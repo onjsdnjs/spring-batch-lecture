@@ -43,7 +43,6 @@ public class ApiStepConfiguration {
 
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
-    private final ApiItemWriter1 apiItemWriter1;
 
     private int chunkSize = 10;
 

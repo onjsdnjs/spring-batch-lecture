@@ -15,7 +15,7 @@ public class WriterClassifier<C,T> implements Classifier<C, T> {
 
     @Override
     public T classify(C classifiable) {
-        return (T)writerMap.get(((ProductVO)classifiable).getType());
+        return (T)writerMap.get(((ApiRequestVO)classifiable).getProductVO().getType());
     }
 
     public void setWriterMap(Map<String, ItemWriter<ApiRequestVO>> writerMap) {
