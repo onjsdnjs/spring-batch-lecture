@@ -26,7 +26,5 @@ public class SendApiItemWriter implements ItemWriter<ApiRequestVO> {
         System.out.println("----------------------------------");
 
         apiService.service(items);
-
-
     }
 }
