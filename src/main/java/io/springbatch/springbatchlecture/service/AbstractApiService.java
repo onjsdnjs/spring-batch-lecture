@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public abstract class AbstractApiService {
-    public void service(List<? extends ApiRequestVO> items) {
+    public void service(List<? extends ApiRequestVO> apiRequest) {
 
         // 중계사업자와 API 연동 작업
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
@@ -38,12 +38,11 @@ public abstract class AbstractApiService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> reqEntity = new HttpEntity<>(null, headers);
-        List<ProductVO> productList = items.stream().map(item -> item.getProductVO()).collect(Collectors.toList());
+        HttpEntity<List<? extends ApiRequestVO>> reqEntity = new HttpEntity<>(apiRequest, headers);
 
-        doApiService(restTemplate, productList, reqEntity);
+        doApiService(restTemplate, reqEntity);
 
     }
 
-    protected abstract void doApiService(RestTemplate restTemplate, List<ProductVO> productList, HttpEntity<String> reqEntity);
+    protected abstract void doApiService(RestTemplate restTemplate, HttpEntity<List<? extends ApiRequestVO>> reqEntity);
 }
