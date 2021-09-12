@@ -19,12 +19,16 @@ import org.springframework.stereotype.Component;
  **/
 
 @Component
-public class SendApiItemProcessor implements ItemProcessor<ProductVO, ApiRequestVO> {
+public class ApiItemProcessor2 implements ItemProcessor<ProductVO, ApiRequestVO> {
 
     @Override
-    public ApiRequestVO process(ProductVO item) throws Exception {
-        System.out.println(">> 8.SendApiItemProcessor : item = " + item);
-        // Business Logic
-        return new ApiRequestVO();
+    public ApiRequestVO process(ProductVO productVO) throws Exception {
+
+        return ApiRequestVO.builder()
+                .url("http://localhost:8080/api/product/2")
+                .ContentType("application/json")
+                .HttpMethod("POST")
+                .productVO(productVO)
+                .build();
     }
 }

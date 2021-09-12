@@ -1,16 +1,11 @@
 package io.springbatch.springbatchlecture.batch.job.daemon1;
 
-import io.springbatch.springbatchlecture.batch.tasklet.send.SendDataPostTasklet;
-import io.springbatch.springbatchlecture.batch.tasklet.send.SendDataPreTasklet;
-import io.springbatch.springbatchlecture.batch.tasklet.send.SendDataTasklet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
