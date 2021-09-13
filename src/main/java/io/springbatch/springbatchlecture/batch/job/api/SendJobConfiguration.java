@@ -29,11 +29,8 @@ public class SendJobConfiguration {
                 .incrementer(new RunIdIncrementer())
                 .listener(new JobListener())
                 .start(apiStep1())
-                .on("FAILED").end()
-                .from(apiStep1()).on("*").to(jobStep)
-                .from(jobStep).on("FAILED").end()
+                .next(jobStep)
                 .next(apiStep2())
-                .end()
                 .build();
     }
 
