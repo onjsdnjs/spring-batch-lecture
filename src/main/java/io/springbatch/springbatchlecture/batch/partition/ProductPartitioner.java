@@ -2,7 +2,7 @@
 package io.springbatch.springbatchlecture.batch.partition;
 
 import io.springbatch.springbatchlecture.batch.domain.ProductVO;
-import io.springbatch.springbatchlecture.batch.job.daemon1.QueryGenerator;
+import io.springbatch.springbatchlecture.batch.job.api.QueryGenerator;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 

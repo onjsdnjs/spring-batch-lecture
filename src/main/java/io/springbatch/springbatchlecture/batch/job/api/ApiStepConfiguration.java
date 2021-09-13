@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture.batch.job.daemon1;
+package io.springbatch.springbatchlecture.batch.job.api;
 
 import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor1;
 import io.springbatch.springbatchlecture.batch.chunk.processor.ApiItemProcessor2;

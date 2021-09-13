@@ -2,10 +2,6 @@ package io.springbatch.springbatchlecture;
 
 import io.springbatch.springbatchlecture.scheduler.BatchSchJob;
 import org.quartz.*;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -25,9 +21,12 @@ public class JobRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
+        String[] sourceArgs = args.getSourceArgs();
         JobDetail jobDetail = buildJobDetail(BatchSchJob.class, "batchJob", "batch", new HashMap());
+        jobDetail.getJobDataMap().put("requestDate", sourceArgs[0]);
+
         try {
-            scheduler.scheduleJob(jobDetail, buildJobTrigger("0/15 * * * * ?"));
+            scheduler.scheduleJob(jobDetail, buildJobTrigger("0/10 * * * * ?"));
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
