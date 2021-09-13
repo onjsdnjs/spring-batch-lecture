@@ -1,5 +1,6 @@
 package io.springbatch.springbatchlecture.batch.job.api;
 
+import io.springbatch.springbatchlecture.batch.listener.JobListener;
 import io.springbatch.springbatchlecture.batch.tasklet.ApiEndTasklet;
 import io.springbatch.springbatchlecture.batch.tasklet.ApiStartTasklet;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SendJobConfiguration {
 
         return jobBuilderFactory.get("apiJob")
                 .incrementer(new RunIdIncrementer())
+                .listener(new JobListener())
                 .start(apiStep1())
                 .on("FAILED").end()
                 .from(apiStep1()).on("*").to(jobStep)

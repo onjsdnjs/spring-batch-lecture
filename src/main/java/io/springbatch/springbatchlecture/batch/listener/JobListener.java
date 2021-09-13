@@ -20,19 +20,11 @@ public class JobListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-
-        System.out.println("");
-        System.out.println("******************************************************************************************************************************************************");
-        System.out.println("*                                                               DataSendChildJobListener is started                                                              *");
-        System.out.println("******************************************************************************************************************************************************");
-        System.out.println("");
-        System.out.println(">> 2-1. DataSendChildJobListener is started");
-        System.out.println("");
-
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
-
+        long time = jobExecution.getEndTime().getTime() - jobExecution.getStartTime().getTime();
+        System.out.println("총 소요시간 : " + time);
     }
 }
