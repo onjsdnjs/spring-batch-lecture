@@ -5,6 +5,7 @@ import io.springbatch.springbatchlecture.scheduler.FileSchJob;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,10 @@ public class ApiJobRunner extends JobRunner {
     protected void doRun(ApplicationArguments args) {
 
         JobDetail jobDetail = buildJobDetail(ApiSchJob.class, "apiJob", "batch", new HashMap());
+        Trigger trigger = buildJobTrigger("0/30 * * * * ?");
 
         try {
-            scheduler.scheduleJob(jobDetail, buildJobTrigger("0/30 * * * * ?"));
+            scheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
