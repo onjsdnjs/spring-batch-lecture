@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture;
+package io.springbatch.springbatchlecture.scheduler;
 
 import org.quartz.*;
 import org.springframework.boot.ApplicationArguments;

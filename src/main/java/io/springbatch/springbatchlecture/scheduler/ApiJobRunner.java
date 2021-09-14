@@ -1,7 +1,5 @@
-package io.springbatch.springbatchlecture;
+package io.springbatch.springbatchlecture.scheduler;
 
-import io.springbatch.springbatchlecture.scheduler.ApiSchJob;
-import io.springbatch.springbatchlecture.scheduler.FileSchJob;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

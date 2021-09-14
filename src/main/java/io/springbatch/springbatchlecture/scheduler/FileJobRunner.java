@@ -1,6 +1,5 @@
-package io.springbatch.springbatchlecture;
+package io.springbatch.springbatchlecture.scheduler;
 
-import io.springbatch.springbatchlecture.scheduler.FileSchJob;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
