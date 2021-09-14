@@ -22,7 +22,7 @@ public class ProductPartitioner implements Partitioner {
 	public Map<String, ExecutionContext> partition(int gridSize) {
 
 		ProductVO[] productList = QueryGenerator.getProductList(dataSource);
-		Map<String, ExecutionContext> result = new HashMap<String, ExecutionContext>();
+		Map<String, ExecutionContext> result = new HashMap<>();
 		int number = 0;
 
 		for (int i = 0; i < productList.length; i++) {

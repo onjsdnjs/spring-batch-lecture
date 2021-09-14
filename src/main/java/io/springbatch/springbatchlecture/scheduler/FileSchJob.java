@@ -18,13 +18,10 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class BatchSchJob extends QuartzJobBean{
+public class FileSchJob extends QuartzJobBean{
 
 	@Autowired
 	private Job fileJob;
-
-	@Autowired
-	private Job apiJob;
 
 	@Autowired
 	private JobLauncher jobLauncher;
@@ -59,7 +56,6 @@ public class BatchSchJob extends QuartzJobBean{
 		}
 
 		jobLauncher.run(fileJob, jobParameters);
-//		jobLauncher.run(apiJob, jobParameters);
 	}
 
 }
