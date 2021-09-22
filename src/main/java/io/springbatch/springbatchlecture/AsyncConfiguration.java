@@ -60,7 +60,7 @@ public class AsyncConfiguration {
                 .reader(pagingItemReader())
                 .processor(asyncItemProcessor())
                 .writer(asyncItemWriter())
-//                .taskExecutor(taskExecutor())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
@@ -69,7 +69,7 @@ public class AsyncConfiguration {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
-        reader.setFetchSize(300);
+        reader.setPageSize(100);
         reader.setRowMapper(new CustomerRowMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
