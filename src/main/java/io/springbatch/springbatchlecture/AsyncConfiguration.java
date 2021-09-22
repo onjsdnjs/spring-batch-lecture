@@ -37,8 +37,8 @@ public class AsyncConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
-//                .start(asyncStep1())
+//                .start(step1())
+                .start(asyncStep1())
                 .listener(new StopWatchJobListener())
                 .build();
     }
