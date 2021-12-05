@@ -25,6 +25,7 @@ public class JobLauncherConfiguration {
         return this.jobBuilderFactory.get("Job")
                 .start(step1())
                 .next(step2())
+                .incrementer(new RunIdIncrementer())
                 .build();
     }
 
