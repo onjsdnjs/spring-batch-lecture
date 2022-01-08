@@ -76,14 +76,14 @@ public class RepeatConfiguration {
 //                        template.setCompletionPolicy(completionPolicy);
 
                         // 예외 제한 횟수만큼 반복문 실행
-//                        template.setExceptionHandler(simpleLimitExceptionHandler());
+                        template.setExceptionHandler(simpleLimitExceptionHandler());
 
                         template.iterate(new RepeatCallback() {
 
                             public RepeatStatus doInIteration(RepeatContext context) {
                                System.out.println("repeatTest");
-//                               throw new RuntimeException("Exception is occurred");
-                                return RepeatStatus.CONTINUABLE;
+                               throw new RuntimeException("Exception is occurred");
+//                                return RepeatStatus.CONTINUABLE;
                             }
 
                         });
