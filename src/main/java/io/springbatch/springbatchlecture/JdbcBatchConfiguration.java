@@ -41,7 +41,7 @@ public class JdbcBatchConfiguration {
     @Bean
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
-                .<Customer, Customer>chunk(10)
+                .<Customer, Customer>chunk(100)
                 .reader(customItemReader())
                 .writer(customItemWriter())
                 .build();
@@ -53,13 +53,13 @@ public class JdbcBatchConfiguration {
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
-        reader.setFetchSize(10);
+        reader.setFetchSize(100);
         reader.setRowMapper(new CustomerRowMapper());
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
         queryProvider.setSelectClause("id, firstName, lastName, birthdate");
         queryProvider.setFromClause("from customer");
-        queryProvider.setWhereClause("where firstname like :firstname");
+//        queryProvider.setWhereClause("where firstname like :firstname");
 
         Map<String, Order> sortKeys = new HashMap<>(1);
 
@@ -70,7 +70,7 @@ public class JdbcBatchConfiguration {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("firstname", "A%");
 
-        reader.setParameterValues(parameters);
+//        reader.setParameterValues(parameters);
 
         return reader;
     }
@@ -80,8 +80,8 @@ public class JdbcBatchConfiguration {
         return new JdbcBatchItemWriterBuilder<Customer>()
                 .dataSource(dataSource)
                 .sql("insert into customer2 values (:id, :firstName, :lastName, :birthdate)")
-//                .beanMapped()
-                .columnMapped()
+                .beanMapped()
+//                .columnMapped()
                 .build();
     }
 
